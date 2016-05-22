@@ -49,9 +49,10 @@
   <ItemGroup>
     <Compile Include="Connection.cs" />
     <Compile Include="DataContracts.cs" />
-    <Compile Include="Knowledge\KnowledgeBase.cs" />
+    <Compile Include="AI\Knowledge.cs" />
     <Compile Include="KnowledgeRenderer.cs" />
-    <Compile Include="Knowledge\TileMap.cs" />
+    <Compile Include="AI\NavGrid.cs" />
+    <Compile Include="AI\TileMap.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

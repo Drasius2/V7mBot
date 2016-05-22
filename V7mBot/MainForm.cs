@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using V7mBot.Knowledge;
+using V7mBot.AI;
 
 namespace V7mBot
 {
@@ -30,7 +30,7 @@ namespace V7mBot
 
         private void btnJoinTraining_Click(object sender, EventArgs e)
         {
-            ResetUI();
+            Reset();
             _con = new Connection(textServer.Text, textKey.Text);
             _con.MoveRequired += OnGameStarted;
             _con.GameFinished += OnGameFinished;
@@ -75,10 +75,13 @@ namespace V7mBot
             Connection.Move action = RandomEnumValue<Connection.Move>();
             _con.SendMove(action);
             pictureBoard.Image = KnowledgeRenderer.RenderMap(_knowledge.MapState, 4);
+            pictureHeroDist.Image = KnowledgeRenderer.RenderHeroDistance(_knowledge.HeroDistance, 4);
         }
 
-        private void ResetUI()
+        private void Reset()
         {
+            if (_con != null)
+                _con.Close();
             progressTurns.Value = 0;
             linkViewGame.Enabled = false;
         }

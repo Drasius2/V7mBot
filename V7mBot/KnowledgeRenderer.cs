@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using V7mBot.Knowledge;
+using V7mBot.AI;
 
 namespace V7mBot
 {
@@ -30,12 +30,20 @@ namespace V7mBot
             {4, Color.Gold }
         };
 
+        public static Color DistanceGradient(float distance, float maxDistance)
+        {
+            float x = Math.Min(1, distance / maxDistance);
+            byte red = (byte)Math.Min(255, x * 512);
+            byte green = (byte)Math.Min(255, (1-x) * 512);
+            return Color.FromArgb(red, green, 0);
+        }
+
         public static Bitmap RenderMap(TileMap map, int upscale = 1)
         {
             Bitmap result = new Bitmap(map.Width, map.Height);
             Render(result, (x, y) =>
             {
-                Knowledge.TileMap.Tile tile = map[x, y];
+                AI.TileMap.Tile tile = map[x, y];
                 switch(tile.Type)
                 {
                     case TileMap.TileType.Free:
@@ -43,7 +51,7 @@ namespace V7mBot
                     case TileMap.TileType.Impassable:
                         return Color.Gray;
                     case TileMap.TileType.Tavern:
-                        return Color.Yellow;
+                        return Color.FromArgb(255, 100, 255);
                     case TileMap.TileType.Hero:
                         return HERO_COLORS[tile.Owner];
                     case TileMap.TileType.GoldMine:
@@ -54,6 +62,19 @@ namespace V7mBot
             });
             return Upscale(result, upscale);
         }
+
+        public static Bitmap RenderHeroDistance(NavGrid navgrid, int upscale = 1)
+        {
+            Bitmap result = new Bitmap(navgrid.Width, navgrid.Height);
+            float maxPathCost = navgrid.MaxPathCost;
+            Render(result, (x, y) =>
+            {
+                NavGrid.Node node = navgrid[x, y];
+                return (node.Previous == -1) ? Color.Black : DistanceGradient(node.PathCost, maxPathCost);
+            });
+            return Upscale(result, upscale);
+        }
+
 
         private static Bitmap Upscale(Bitmap source, int upscale)
         {

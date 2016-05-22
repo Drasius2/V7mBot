@@ -13,6 +13,7 @@ namespace V7mBot
     {
         string _serverURL;
         string _botKey;
+        bool _closed;
 
         GameResponse _gameState;
 
@@ -32,6 +33,7 @@ namespace V7mBot
         {
             _serverURL = server;
             _botKey = botKey;
+            _closed = false;
         }
 
         public void JoinTraining(uint numTurns, string map)
@@ -43,7 +45,13 @@ namespace V7mBot
             Uri uri = new Uri(_serverURL + "/api/training");
             SendRequest(uri, parameters);
         }
-        
+
+        public void Close()
+        {
+            _closed = true;
+        }
+
+
         public void JoinArena(string botKey)
         {
             //uri = serverURL + "/api/arena";
@@ -67,6 +75,9 @@ namespace V7mBot
 
         private void SendRequest(Uri uri, string parameters)
         {
+            if (_closed)
+                return;
+
             using (WebClient client = new WebClient())
             {
                 client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
@@ -80,7 +91,8 @@ namespace V7mBot
                     using (var reader = new StreamReader(exception.Response.GetResponseStream()))
                     {
                         string errorText = reader.ReadToEnd();
-                        RequestFailed(this, errorText);
+                        if (!_closed)
+                            RequestFailed(this, errorText);
                     }
                 }
             }
@@ -88,7 +100,10 @@ namespace V7mBot
 
         private void OnRequestCompleted(object sender, UploadStringCompletedEventArgs e)
         {
-            if(e.Error != null)
+            if (_closed)
+                return;
+
+            if (e.Error != null)
             {
                 if(e.Error.InnerException != null)
                     RequestFailed(this, e.Error.InnerException.Message);

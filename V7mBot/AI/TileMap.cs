@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace V7mBot.Knowledge
+namespace V7mBot.AI
 {
     public class TileMap
     {
@@ -76,6 +76,16 @@ namespace V7mBot.Knowledge
                             break;
                     }
                 }
+        }
+        
+        public bool Find(out int x, out int y, Predicate<Tile> condition)
+        {
+            y = 0;
+            for (x = 0; x < _size; x++)
+                for (y = 0; y < _size; y++)
+                    if (condition(_tiles[x, y]))
+                        return true;
+            return false;
         }
     }
 }

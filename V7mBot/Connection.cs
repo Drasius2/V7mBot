@@ -46,6 +46,13 @@ namespace V7mBot
             SendRequest(uri, parameters);
         }
 
+        public void JoinArena()
+        {
+            string parameters = "key=" + _botKey;
+            Uri uri = new Uri(_serverURL + "/api/arena");
+            SendRequest(uri, parameters);
+        }
+
         public void Close()
         {
             _closed = true;

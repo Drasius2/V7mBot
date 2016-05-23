@@ -10,15 +10,17 @@ namespace V7mBot.AI
     public class Knowledge
     {
         private Position _heroPosition;
-        private TileMap _mapState;
+        private Hero _hero;
+        private TileMap _map;
         private NavGrid _threat;
-        private NavGrid _goals;
+        private NavGrid _mines;
+        private NavGrid _taverns;
 
-        public TileMap MapState
+        public TileMap Map
         {
             get
             {
-                return _mapState;
+                return _map;
             }
         }
 
@@ -30,58 +32,76 @@ namespace V7mBot.AI
             }
         }
 
-        public NavGrid Goals
+        public NavGrid Mines
         {
             get
             {
-                return _goals;
+                return _mines;
             }
         }
 
-
-        public Position Hero
+        public NavGrid Taverns
         {
             get
             {
-                return _heroPosition;
+                return _taverns;
+            }
+        }
+
+        public Position HeroPosition
+        {
+            get
+            {
+                //json has x & y swapped
+                return new Position(_hero.pos.y, _hero.pos.x);
+            }
+        }
+
+        public int HeroLife
+        {
+            get
+            {
+                return _hero.life;
             }
         }
 
         public Knowledge(GameResponse rawData)
         {
             int mapSize = rawData.game.board.size;
-            _mapState = new TileMap(mapSize);
-            _mapState.Parse(rawData.game.board.tiles);
-
-            _threat = new NavGrid(mapSize, mapSize);
-            _threat.SetNodeCost((x, y) =>
-            {
-                return (_mapState[x, y].Type == TileMap.TileType.Free || _mapState[x, y].Type == TileMap.TileType.Hero) ? 1 : -1;
-            });
-
-            _goals = new NavGrid(mapSize, mapSize);
-            _goals.SetNodeCost((x, y) =>
-            {
-                return (_mapState[x, y].Type == TileMap.TileType.Free || _mapState[x, y].Type == TileMap.TileType.Hero) ? 1 : -1;
-            });
+            _map = new TileMap(mapSize);
+            _map.Parse(rawData.game.board.tiles);
+            _threat = CreateNavGrid(_map);
+            _mines = CreateNavGrid(_map);
+            _taverns = CreateNavGrid(_map);
         }
 
         public void Update(GameResponse rawData)
         {
-            _mapState.Parse(rawData.game.board.tiles);
-            //update hero-distance
+            _map.Parse(rawData.game.board.tiles);
             int heroID = rawData.hero.id;
-            _heroPosition = _mapState.Find(tile => tile.Type == TileMap.TileType.Hero && tile.Owner == heroID).First();
-            _threat.Reset();
-            foreach (var pos in _mapState.Find(tile => tile.Type == TileMap.TileType.Hero && tile.Owner != heroID))
-                _threat.Seed(pos, 0);
-            _threat.Flood();
+            _hero = rawData.game.heroes.First(hero => hero.id == heroID);
+            Chart(_threat, _map.Find(tile => tile.Type == TileMap.TileType.Hero && tile.Owner != heroID));
+            Chart(_mines, _map.Find(tile => tile.Type == TileMap.TileType.GoldMine && tile.Owner != heroID));
+            Chart(_taverns, _map.Find(tile => tile.Type == TileMap.TileType.Tavern));
+        }
 
-            //update goals - seed with all uncontrolled mines
-            _goals.Reset();
-            foreach (var pos in _mapState.Find(tile => tile.Type == TileMap.TileType.GoldMine && tile.Owner != heroID))
-                _goals.Seed(pos, 0);
-            _goals.Flood();
+        private void Chart(NavGrid nav, IEnumerable<Position> positions)
+        {
+            nav.Reset();
+            foreach (var pos in positions)
+                nav.Seed(pos, 0);
+            nav.Flood();
+        }
+
+        private NavGrid CreateNavGrid(TileMap map)
+        {
+            var grid = new NavGrid(map.Width, map.Height);
+            grid.SetNodeCost((x, y) =>
+            {
+                bool passable = _map[x, y].Type == TileMap.TileType.Free || _map[x, y].Type == TileMap.TileType.Hero;
+                return passable ? 1 : -1;
+            });
+            return grid;
         }
     }
 }

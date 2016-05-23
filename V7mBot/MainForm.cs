@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ namespace V7mBot
         Connection _con = null;
         Knowledge _knowledge = null;
         Bot _bot = null;
+        bool _arena = false;
 
         public MainForm()
         {
@@ -25,18 +27,47 @@ namespace V7mBot
 
         private void btnJoinTraining_Click(object sender, EventArgs e)
         {
+            _arena = false;
+            NewCon();
+            _con.JoinTraining((uint)numericTurns.Value, null);
+        }
+
+        private void btnJoinArena_Click(object sender, EventArgs e)
+        {
+            _arena = true;
+            NewCon();
+            _con.JoinArena();
+        }
+
+        private void NewCon()
+        {
             Reset();
             _con = new Connection(textServer.Text, textKey.Text);
             _con.MoveRequired += OnGameStarted;
             _con.GameFinished += OnGameFinished;
             _con.RequestFailed += OnRequestFailed;
-            _con.JoinTraining((uint)numericTurns.Value, null);
         }
 
         private void OnGameFinished(object sender, GameResponse e)
         {
             progressTurns.Value = progressTurns.Maximum;
-            //MessageBox.Show("The game has terminaed after " + e.game.turn + " turns!", "Game Over", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //write result into log
+            LogResult(e);
+            if(cbContinuous.Checked && _arena)
+            {
+                NewCon();
+                _con.JoinArena();
+            }
+        }
+
+        private void LogResult(GameResponse e)
+        {
+            Debug.WriteLine("***Game Over***");
+            int place = 1;
+            foreach (var hero in e.game.heroes.OrderByDescending(h => h.gold))
+                Debug.WriteLine("\\" + (place++) + "/ " + hero.name + " with " + hero.gold + " gold.");
+            Debug.WriteLine("Link: " + _con.GameState.viewUrl);
+            Debug.WriteLine("***************");
         }
 
         private void OnRequestFailed(object sender, string e)
@@ -70,15 +101,17 @@ namespace V7mBot
             _knowledge.Update(rawData);
             Move action = _bot.Act();
             _con.SendMove(action);
-            pictureBoard.Image = KnowledgeRenderer.Render(_knowledge.MapState, 5);
+            pictureBoard.Image = KnowledgeRenderer.Render(_knowledge.Map, 5);
             pictureThreat.Image = KnowledgeRenderer.Render(_knowledge.Threat, KnowledgeRenderer.GradientRedToGreen, 5);
-            pictureGoals.Image = KnowledgeRenderer.Render(_knowledge.Goals, KnowledgeRenderer.GradientGreenToRed, 5);
+            pictureMines.Image = KnowledgeRenderer.Render(_knowledge.Mines, KnowledgeRenderer.GradientGreenToRed, 5);
+            pictureTaverns.Image = KnowledgeRenderer.Render(_knowledge.Taverns, KnowledgeRenderer.GradientGreenToRed, 5);
         }
 
         private void Reset()
         {
             if (_con != null)
                 _con.Close();
+
             progressTurns.Value = 0;
             linkViewGame.Enabled = false;
         }

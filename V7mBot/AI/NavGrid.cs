@@ -41,7 +41,8 @@ namespace V7mBot.AI
 
         public float MaxPathCost
         {
-            get { return _grid.Where(n => n.PathCost < NullCost).Select(n => n.PathCost).Max();  }
+            //that bunch of ??? prevent a crash when Where() is empty (that's why we hide it behind a property, right?)
+            get { return _grid.Where(n => n.PathCost < NullCost).Select(n => (int?)n.PathCost).Max() ?? 0;  }
         }
 
         public NavGrid(int width, int height)

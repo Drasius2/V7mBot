@@ -17,8 +17,8 @@ namespace V7mBot.AI
             public float PathCost = NullCost;
             public int Previous = -1;
             public bool Open = false;
-        }               
-        
+        }
+
         Queue<int> _open;
         List<Node> _grid;
         int _width;
@@ -76,6 +76,11 @@ namespace V7mBot.AI
                 }
         }
 
+        internal void Seed(Position pos, int cost)
+        {
+            Seed(pos.X, pos.Y, cost);
+        }
+
         public void Seed(int x, int y, float cost)
         {
             int i = IndexOf(x, y);
@@ -111,6 +116,31 @@ namespace V7mBot.AI
                     _open.Enqueue(j);
                 }
             }
+        }
+
+        public Move GetMove(Position pos)
+        {
+            return GetMove(pos.X, pos.Y);
+        }
+
+        public Move GetMove(int x, int y)
+        {
+            int current = IndexOf(x, y);
+            int prev = _grid[current].Previous;
+            if (prev == -1)
+                return Move.Stay;
+
+            int step = prev - current;
+            if(step == 1)
+                return Move.East;
+            else if (step == -1)
+                return Move.West;
+            else if (step == _width)
+                return Move.South;
+            else if (step == -_width)
+                return Move.North;
+
+            return Move.Stay;
         }
 
         private IEnumerable<int> Neighbours(int i)

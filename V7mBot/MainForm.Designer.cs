@@ -41,11 +41,13 @@
             this.btnJoinTraining = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.pictureBoard = new System.Windows.Forms.PictureBox();
-            this.pictureHeroDist = new System.Windows.Forms.PictureBox();
+            this.pictureThreat = new System.Windows.Forms.PictureBox();
+            this.pictureGoals = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTurns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoard)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureHeroDist)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureThreat)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureGoals)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -64,7 +66,7 @@
             this.panel1.Controls.Add(this.button1);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(374, 127);
+            this.panel1.Size = new System.Drawing.Size(372, 127);
             this.panel1.TabIndex = 8;
             // 
             // linkViewGame
@@ -183,24 +185,33 @@
             // 
             this.pictureBoard.Location = new System.Drawing.Point(12, 145);
             this.pictureBoard.Name = "pictureBoard";
-            this.pictureBoard.Size = new System.Drawing.Size(100, 100);
+            this.pictureBoard.Size = new System.Drawing.Size(120, 120);
             this.pictureBoard.TabIndex = 9;
             this.pictureBoard.TabStop = false;
             // 
-            // pictureHeroDist
+            // pictureThreat
             // 
-            this.pictureHeroDist.Location = new System.Drawing.Point(118, 145);
-            this.pictureHeroDist.Name = "pictureHeroDist";
-            this.pictureHeroDist.Size = new System.Drawing.Size(100, 100);
-            this.pictureHeroDist.TabIndex = 10;
-            this.pictureHeroDist.TabStop = false;
+            this.pictureThreat.Location = new System.Drawing.Point(138, 145);
+            this.pictureThreat.Name = "pictureThreat";
+            this.pictureThreat.Size = new System.Drawing.Size(120, 120);
+            this.pictureThreat.TabIndex = 10;
+            this.pictureThreat.TabStop = false;
+            // 
+            // pictureGoals
+            // 
+            this.pictureGoals.Location = new System.Drawing.Point(264, 145);
+            this.pictureGoals.Name = "pictureGoals";
+            this.pictureGoals.Size = new System.Drawing.Size(120, 120);
+            this.pictureGoals.TabIndex = 11;
+            this.pictureGoals.TabStop = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(396, 390);
-            this.Controls.Add(this.pictureHeroDist);
+            this.ClientSize = new System.Drawing.Size(394, 390);
+            this.Controls.Add(this.pictureGoals);
+            this.Controls.Add(this.pictureThreat);
             this.Controls.Add(this.pictureBoard);
             this.Controls.Add(this.panel1);
             this.Name = "MainForm";
@@ -209,7 +220,8 @@
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTurns)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoard)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureHeroDist)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureThreat)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureGoals)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -229,7 +241,8 @@
         private System.Windows.Forms.LinkLabel linkViewGame;
         private System.Windows.Forms.Label textProgress;
         private System.Windows.Forms.PictureBox pictureBoard;
-        private System.Windows.Forms.PictureBox pictureHeroDist;
+        private System.Windows.Forms.PictureBox pictureThreat;
+        private System.Windows.Forms.PictureBox pictureGoals;
     }
 }
 

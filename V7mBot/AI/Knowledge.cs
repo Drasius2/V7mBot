@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace V7mBot.AI
 {
-    public class KnowledgeBase
+    public class Knowledge
     {
+        private Position _heroPosition;
         private TileMap _mapState;
-        private NavGrid _heroDistance;
+        private NavGrid _threat;
+        private NavGrid _goals;
 
         public TileMap MapState
         {
@@ -20,24 +22,47 @@ namespace V7mBot.AI
             }
         }
 
-        public NavGrid HeroDistance
+        public NavGrid Threat
         {
             get
             {
-                return _heroDistance;
+                return _threat;
             }
         }
 
-        public KnowledgeBase(GameResponse rawData)
+        public NavGrid Goals
+        {
+            get
+            {
+                return _goals;
+            }
+        }
+
+
+        public Position Hero
+        {
+            get
+            {
+                return _heroPosition;
+            }
+        }
+
+        public Knowledge(GameResponse rawData)
         {
             int mapSize = rawData.game.board.size;
             _mapState = new TileMap(mapSize);
             _mapState.Parse(rawData.game.board.tiles);
 
-            _heroDistance = new NavGrid(mapSize, mapSize);
-            _heroDistance.SetNodeCost((x, y) =>
+            _threat = new NavGrid(mapSize, mapSize);
+            _threat.SetNodeCost((x, y) =>
             {
-                return (_mapState[x, y].Type == TileMap.TileType.Free) ? 1 : -1;
+                return (_mapState[x, y].Type == TileMap.TileType.Free || _mapState[x, y].Type == TileMap.TileType.Hero) ? 1 : -1;
+            });
+
+            _goals = new NavGrid(mapSize, mapSize);
+            _goals.SetNodeCost((x, y) =>
+            {
+                return (_mapState[x, y].Type == TileMap.TileType.Free || _mapState[x, y].Type == TileMap.TileType.Hero) ? 1 : -1;
             });
         }
 
@@ -46,13 +71,17 @@ namespace V7mBot.AI
             _mapState.Parse(rawData.game.board.tiles);
             //update hero-distance
             int heroID = rawData.hero.id;
-            int heroX, heroY;
-            if(_mapState.Find(out heroX, out heroY, tile => tile.Type == TileMap.TileType.Hero && tile.Owner == heroID))
-            {
-                _heroDistance.Reset();
-                _heroDistance.Seed(heroX, heroY, 0);
-                _heroDistance.Flood();
-            }
+            _heroPosition = _mapState.Find(tile => tile.Type == TileMap.TileType.Hero && tile.Owner == heroID).First();
+            _threat.Reset();
+            foreach (var pos in _mapState.Find(tile => tile.Type == TileMap.TileType.Hero && tile.Owner != heroID))
+                _threat.Seed(pos, 0);
+            _threat.Flood();
+
+            //update goals - seed with all uncontrolled mines
+            _goals.Reset();
+            foreach (var pos in _mapState.Find(tile => tile.Type == TileMap.TileType.GoldMine && tile.Owner != heroID))
+                _goals.Seed(pos, 0);
+            _goals.Flood();
         }
     }
 }

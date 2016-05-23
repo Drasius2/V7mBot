@@ -30,7 +30,8 @@ namespace V7mBot
             {4, Color.Gold }
         };
 
-        public static Color DistanceGradient(float distance, float maxDistance)
+        public delegate Color Gradient(float distance, float maxDistance);
+        public static Color GradientGreenToRed(float distance, float maxDistance)
         {
             float x = Math.Min(1, distance / maxDistance);
             byte red = (byte)Math.Min(255, x * 512);
@@ -38,7 +39,15 @@ namespace V7mBot
             return Color.FromArgb(red, green, 0);
         }
 
-        public static Bitmap RenderMap(TileMap map, int upscale = 1)
+        public static Color GradientRedToGreen(float distance, float maxDistance)
+        {
+            float x = Math.Min(1, distance / maxDistance);
+            byte green = (byte)Math.Min(255, x * 512);
+            byte red = (byte)Math.Min(255, (1 - x) * 512);
+            return Color.FromArgb(red, green, 0);
+        }
+
+        public static Bitmap Render(TileMap map, int upscale = 1)
         {
             Bitmap result = new Bitmap(map.Width, map.Height);
             Render(result, (x, y) =>
@@ -63,18 +72,17 @@ namespace V7mBot
             return Upscale(result, upscale);
         }
 
-        public static Bitmap RenderHeroDistance(NavGrid navgrid, int upscale = 1)
+        public static Bitmap Render(NavGrid navgrid, Gradient gradient, int upscale = 1)
         {
             Bitmap result = new Bitmap(navgrid.Width, navgrid.Height);
             float maxPathCost = navgrid.MaxPathCost;
             Render(result, (x, y) =>
             {
                 NavGrid.Node node = navgrid[x, y];
-                return (node.Previous == -1) ? Color.Black : DistanceGradient(node.PathCost, maxPathCost);
+                return (node.PathCost <= maxPathCost) ? gradient(node.PathCost, maxPathCost) : Color.Black;
             });
             return Upscale(result, upscale);
         }
-
 
         private static Bitmap Upscale(Bitmap source, int upscale)
         {

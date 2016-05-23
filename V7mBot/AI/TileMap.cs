@@ -78,14 +78,12 @@ namespace V7mBot.AI
                 }
         }
         
-        public bool Find(out int x, out int y, Predicate<Tile> condition)
+        public IEnumerable<Position> Find(Predicate<Tile> condition)
         {
-            y = 0;
-            for (x = 0; x < _size; x++)
-                for (y = 0; y < _size; y++)
+            for (int x = 0; x < _size; x++)
+                for (int y = 0; y < _size; y++)
                     if (condition(_tiles[x, y]))
-                        return true;
-            return false;
+                        yield return new Position(x, y);
         }
     }
 }

@@ -57,15 +57,6 @@ namespace V7mBot
             //uri = serverURL + "/api/arena";
         }
 
-        public enum Move
-        {
-            Stay,
-            North,
-            East,
-            South,
-            West
-        }
-
         public void SendMove(Move action)
         {
             string parameters = "key=" + _botKey + "&dir=" + action.ToString();

@@ -8,20 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using V7mBot.AI;
+using V7mBot.AI.Bots;
 
 namespace V7mBot
 {
     public partial class MainForm : Form
     {
         Connection _con = null;
-        KnowledgeBase _knowledge = null;
-
-        Random _rng = new Random();
-        T RandomEnumValue<T>()
-        {
-            var v = Enum.GetValues(typeof(T));
-            return (T)v.GetValue(_rng.Next(v.Length));
-        }
+        Knowledge _knowledge = null;
+        Bot _bot = null;
 
         public MainForm()
         {
@@ -58,7 +53,8 @@ namespace V7mBot
             _con.MoveRequired -= OnGameStarted; //oneshot
             _con.MoveRequired += OnActionRequired;
 
-            _knowledge = new KnowledgeBase(e);
+            _knowledge = new Knowledge(e);
+            _bot = new SimpleBot(_knowledge);
             PlayMove(e);
         }
 
@@ -72,10 +68,11 @@ namespace V7mBot
         private void PlayMove(GameResponse rawData)
         {
             _knowledge.Update(rawData);
-            Connection.Move action = RandomEnumValue<Connection.Move>();
+            Move action = _bot.Act();
             _con.SendMove(action);
-            pictureBoard.Image = KnowledgeRenderer.RenderMap(_knowledge.MapState, 4);
-            pictureHeroDist.Image = KnowledgeRenderer.RenderHeroDistance(_knowledge.HeroDistance, 4);
+            pictureBoard.Image = KnowledgeRenderer.Render(_knowledge.MapState, 5);
+            pictureThreat.Image = KnowledgeRenderer.Render(_knowledge.Threat, KnowledgeRenderer.GradientRedToGreen, 5);
+            pictureGoals.Image = KnowledgeRenderer.Render(_knowledge.Goals, KnowledgeRenderer.GradientGreenToRed, 5);
         }
 
         private void Reset()

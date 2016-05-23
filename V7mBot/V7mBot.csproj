@@ -47,6 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\Position.cs" />
+    <Compile Include="Move.cs" />
+    <Compile Include="AI\Bot.cs" />
+    <Compile Include="AI\Bots\RandomBot.cs" />
+    <Compile Include="AI\Bots\SimpleBot.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="DataContracts.cs" />
     <Compile Include="AI\Knowledge.cs" />

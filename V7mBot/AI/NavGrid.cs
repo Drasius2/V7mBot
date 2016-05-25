@@ -23,6 +23,7 @@ namespace V7mBot.AI
         List<Node> _grid;
         int _width;
         int _height;
+        int _maxPathCost;
 
         public int Width
         {
@@ -41,8 +42,7 @@ namespace V7mBot.AI
 
         public float MaxPathCost
         {
-            //that bunch of ??? prevent a crash when Where() is empty (that's why we hide it behind a property, right?)
-            get { return _grid.Where(n => n.PathCost < NullCost).Select(n => (int?)n.PathCost).Max() ?? 0;  }
+            get { return _maxPathCost; }
         }
 
         public NavGrid(int width, int height)
@@ -66,6 +66,7 @@ namespace V7mBot.AI
 
         public void Reset()
         {
+            _maxPathCost = -1;
             _open.Clear();
             int i = 0;
             for (int y = 0; y < _height; y++)
@@ -92,7 +93,7 @@ namespace V7mBot.AI
 
         public void Flood()
         {
-            while(_open.Count > 0)
+            while (_open.Count > 0)
             {
                 int i = _open.Dequeue();
                 Node source = _grid[i];
@@ -117,6 +118,8 @@ namespace V7mBot.AI
                     _open.Enqueue(j);
                 }
             }
+            //that bunch of ??? prevent a crash when Where() is empty (that's why we hide it behind a property, right?)
+            _maxPathCost = _grid.Where(n => n.PathCost < NullCost).Select(n => (int?)n.PathCost).Max() ?? 0;
         }
 
         public Move GetMove(Position pos)

@@ -10,11 +10,12 @@ namespace V7mBot.AI
     public class Knowledge
     {
         //--> put that kinda specifics in derived classes
-        const float ZERO_THREAT_DISTANCE = 8;
-        const float MINING_THREAT_TO_COST = 8;
+        //const float ZERO_THREAT_DISTANCE = 10;
+        const float MINING_THREAT_TO_COST = 50;
         const float TAVERN_THREAT_TO_COST = 50;
 
         private GameResponse _rawData;
+        float _zeroThreatDistance;
         private int _heroID;
         private Hero _hero;
         private TileMap _map;
@@ -93,9 +94,15 @@ namespace V7mBot.AI
             }
         }
 
+        public int HeroGold
+        {
+            get { return _hero.gold; }
+        }
+
         public Knowledge(GameResponse rawData)
         {
             int mapSize = rawData.game.board.size;
+            _zeroThreatDistance = mapSize / 4;
             _map = new TileMap(mapSize);
             _map.Parse(rawData.game.board.tiles);
             _threat = CreateNavGrid(_map);
@@ -179,12 +186,12 @@ namespace V7mBot.AI
 
         private float ComputeMiningCostByThreat(int x, int y)
         {
-            return 1 + GetNormalizedThreat(x, y, ZERO_THREAT_DISTANCE) * MINING_THREAT_TO_COST;
+            return 1 + GetNormalizedThreat(x, y, _zeroThreatDistance) * MINING_THREAT_TO_COST;
         }
 
         private float ComputeTavernCostByThreat(int x, int y)
         {
-            return 1 + GetNormalizedThreat(x, y, ZERO_THREAT_DISTANCE) * TAVERN_THREAT_TO_COST;
+            return 1 + GetNormalizedThreat(x, y, _zeroThreatDistance) * TAVERN_THREAT_TO_COST;
         }
     }
 }

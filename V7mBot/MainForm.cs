@@ -41,7 +41,13 @@ namespace V7mBot
 
         private void NewCon()
         {
-            Reset();
+            progressTurns.Value = 0;
+            linkViewGame.Enabled = false;
+
+            if (_con != null)
+                _con.Close();
+
+            Log("Waiting for next game...");
             _con = new Connection(textServer.Text, textKey.Text);
             _con.MoveRequired += OnGameStarted;
             _con.GameFinished += OnGameFinished;
@@ -53,30 +59,19 @@ namespace V7mBot
             progressTurns.Value = progressTurns.Maximum;
             //write result into log
             LogResult(e);
-            if(cbContinuous.Checked && _arena)
-            {
-                NewCon();
-                _con.JoinArena();
-            }
-        }
-
-        private void LogResult(GameResponse e)
-        {
-            Debug.WriteLine("***Game Over***");
-            int place = 1;
-            foreach (var hero in e.game.heroes.OrderByDescending(h => h.gold))
-                Debug.WriteLine("\\" + (place++) + "/ " + hero.name + " with " + hero.gold + " gold.");
-            Debug.WriteLine("Link: " + _con.GameState.viewUrl);
-            Debug.WriteLine("***************");
+            Restart();
         }
 
         private void OnRequestFailed(object sender, string e)
         {
-            MessageBox.Show(e, "Request failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Log("ERROR: " + e);
+            Restart();
         }
 
         private void OnGameStarted(object sender, GameResponse e)
         {
+            Log("Joined " + _con.GameState.viewUrl);
+
             progressTurns.Maximum = e.game.maxTurns;
             progressTurns.Value = e.game.turn;
             linkViewGame.Enabled = true;
@@ -101,25 +96,49 @@ namespace V7mBot
             _knowledge.Update(rawData);
             Move action = _bot.Act();
             _con.SendMove(action);
-            pictureBoard.Image = KnowledgeRenderer.Render(_knowledge.Map, 5);
-            pictureThreat.Image = KnowledgeRenderer.Render(_knowledge.Threat, KnowledgeRenderer.GradientRedToGreen, 5);
-            pictureMines.Image = KnowledgeRenderer.Render(_knowledge.Mines, KnowledgeRenderer.GradientGreenToRed, 5);
-            pictureTaverns.Image = KnowledgeRenderer.Render(_knowledge.Taverns, KnowledgeRenderer.GradientGreenToRed, 5);
+            pictureBoard.Image = KnowledgeRenderer.Render(_knowledge.Map, 4);
+            pictureThreat.Image = KnowledgeRenderer.Render(_knowledge.Threat, KnowledgeRenderer.GradientRedToGreen, 4);
+            pictureMines.Image = KnowledgeRenderer.Render(_knowledge.Mines, KnowledgeRenderer.GradientGreenToRed, 4);
+            pictureTaverns.Image = KnowledgeRenderer.Render(_knowledge.Taverns, KnowledgeRenderer.GradientGreenToRed, 4);
         }
 
-        private void Reset()
+        private void Restart()
         {
-            if (_con != null)
-                _con.Close();
+            if (cbContinuous.Checked && _arena)
+            {
+                NewCon();
+                _con.JoinArena();
+            }
+        }
 
-            progressTurns.Value = 0;
-            linkViewGame.Enabled = false;
+        private void LogResult(GameResponse e)
+        {
+            Log("***Game Over***");
+            int place = 1;
+            foreach (var hero in e.game.heroes.OrderByDescending(h => h.gold))
+                Log((place++) + ". " + hero.name + " with " + hero.gold + " gold.");
+            Debug.WriteLine("***************");
+        }
+
+        private void Log(string msg)
+        {
+            logBox.Items.Add(msg);
         }
 
         private void OnGameViewLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if(_con != null)
-                System.Diagnostics.Process.Start(_con.GameState.viewUrl);
+                Process.Start(_con.GameState.viewUrl);
+        }
+
+        private void OnLogBoxMouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            string msg = logBox.SelectedItem as string;
+            if (msg != null && msg.Contains("http://"))
+            {
+                string url = msg.Substring(msg.IndexOf("http://"));
+                Process.Start(url);
+            }
         }
     }
 }

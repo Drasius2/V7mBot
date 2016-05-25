@@ -1,0 +1,13 @@
+simpleton: 0r9s62d9
+bitsquid: xdmz43ph
+
+SIMPLEBOT
+
+Use Thread to avoid Opponents
+
+Flexible transition between Drinking & Minecapping based on distance 
+...don't run to a far away mine, then realize you won't have enough health to cap it and walk all the way back
+
+Whitelist for friendly Opponents
+
+PHASE II

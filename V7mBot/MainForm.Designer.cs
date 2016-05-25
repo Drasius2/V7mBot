@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbContinuous = new System.Windows.Forms.CheckBox();
             this.linkViewGame = new System.Windows.Forms.LinkLabel();
             this.textProgress = new System.Windows.Forms.Label();
             this.progressTurns = new System.Windows.Forms.ProgressBar();
@@ -48,7 +49,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.cbContinuous = new System.Windows.Forms.CheckBox();
+            this.logBox = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTurns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoard)).BeginInit();
@@ -74,14 +75,26 @@
             this.panel1.Controls.Add(this.btnJoinArena);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(372, 127);
+            this.panel1.Size = new System.Drawing.Size(370, 130);
             this.panel1.TabIndex = 8;
+            // 
+            // cbContinuous
+            // 
+            this.cbContinuous.AutoSize = true;
+            this.cbContinuous.Checked = true;
+            this.cbContinuous.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbContinuous.Location = new System.Drawing.Point(92, 41);
+            this.cbContinuous.Name = "cbContinuous";
+            this.cbContinuous.Size = new System.Drawing.Size(79, 17);
+            this.cbContinuous.TabIndex = 20;
+            this.cbContinuous.Text = "Continuous";
+            this.cbContinuous.UseVisualStyleBackColor = true;
             // 
             // linkViewGame
             // 
             this.linkViewGame.AutoSize = true;
             this.linkViewGame.Enabled = false;
-            this.linkViewGame.Location = new System.Drawing.Point(308, 98);
+            this.linkViewGame.Location = new System.Drawing.Point(294, 98);
             this.linkViewGame.Name = "linkViewGame";
             this.linkViewGame.Size = new System.Drawing.Size(61, 13);
             this.linkViewGame.TabIndex = 19;
@@ -102,7 +115,7 @@
             // 
             this.progressTurns.Location = new System.Drawing.Point(7, 68);
             this.progressTurns.Name = "progressTurns";
-            this.progressTurns.Size = new System.Drawing.Size(357, 23);
+            this.progressTurns.Size = new System.Drawing.Size(348, 23);
             this.progressTurns.Step = 1;
             this.progressTurns.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressTurns.TabIndex = 17;
@@ -114,7 +127,7 @@
             0,
             0,
             0});
-            this.numericTurns.Location = new System.Drawing.Point(311, 40);
+            this.numericTurns.Location = new System.Drawing.Point(302, 40);
             this.numericTurns.Name = "numericTurns";
             this.numericTurns.Size = new System.Drawing.Size(53, 20);
             this.numericTurns.TabIndex = 16;
@@ -127,7 +140,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(271, 42);
+            this.label3.Location = new System.Drawing.Point(262, 42);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(34, 13);
             this.label3.TabIndex = 15;
@@ -136,7 +149,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(142, 14);
+            this.label2.Location = new System.Drawing.Point(133, 14);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 13;
@@ -154,7 +167,7 @@
             // textServer
             // 
             this.textServer.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textServer.Location = new System.Drawing.Point(186, 9);
+            this.textServer.Location = new System.Drawing.Point(177, 9);
             this.textServer.Name = "textServer";
             this.textServer.Size = new System.Drawing.Size(178, 22);
             this.textServer.TabIndex = 11;
@@ -171,7 +184,7 @@
             // 
             // btnJoinTraining
             // 
-            this.btnJoinTraining.Location = new System.Drawing.Point(186, 37);
+            this.btnJoinTraining.Location = new System.Drawing.Point(177, 37);
             this.btnJoinTraining.Name = "btnJoinTraining";
             this.btnJoinTraining.Size = new System.Drawing.Size(79, 23);
             this.btnJoinTraining.TabIndex = 9;
@@ -195,6 +208,7 @@
             this.pictureBoard.Location = new System.Drawing.Point(15, 169);
             this.pictureBoard.Name = "pictureBoard";
             this.pictureBoard.Size = new System.Drawing.Size(120, 120);
+            this.pictureBoard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBoard.TabIndex = 9;
             this.pictureBoard.TabStop = false;
             // 
@@ -204,6 +218,7 @@
             this.pictureThreat.Location = new System.Drawing.Point(139, 169);
             this.pictureThreat.Name = "pictureThreat";
             this.pictureThreat.Size = new System.Drawing.Size(120, 120);
+            this.pictureThreat.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureThreat.TabIndex = 10;
             this.pictureThreat.TabStop = false;
             // 
@@ -213,15 +228,17 @@
             this.pictureMines.Location = new System.Drawing.Point(265, 169);
             this.pictureMines.Name = "pictureMines";
             this.pictureMines.Size = new System.Drawing.Size(120, 120);
+            this.pictureMines.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureMines.TabIndex = 11;
             this.pictureMines.TabStop = false;
             // 
             // pictureTaverns
             // 
             this.pictureTaverns.BackColor = System.Drawing.Color.Black;
-            this.pictureTaverns.Location = new System.Drawing.Point(15, 313);
+            this.pictureTaverns.Location = new System.Drawing.Point(391, 169);
             this.pictureTaverns.Name = "pictureTaverns";
             this.pictureTaverns.Size = new System.Drawing.Size(120, 120);
+            this.pictureTaverns.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureTaverns.TabIndex = 12;
             this.pictureTaverns.TabStop = false;
             // 
@@ -255,29 +272,31 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(9, 297);
+            this.label8.Location = new System.Drawing.Point(385, 153);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(46, 13);
             this.label8.TabIndex = 17;
             this.label8.Text = "Taverns";
             // 
-            // cbContinuous
+            // logBox
             // 
-            this.cbContinuous.AutoSize = true;
-            this.cbContinuous.Checked = true;
-            this.cbContinuous.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbContinuous.Location = new System.Drawing.Point(92, 41);
-            this.cbContinuous.Name = "cbContinuous";
-            this.cbContinuous.Size = new System.Drawing.Size(79, 17);
-            this.cbContinuous.TabIndex = 20;
-            this.cbContinuous.Text = "Continuous";
-            this.cbContinuous.UseVisualStyleBackColor = true;
+            this.logBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.logBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.logBox.FormattingEnabled = true;
+            this.logBox.ItemHeight = 14;
+            this.logBox.Location = new System.Drawing.Point(391, 12);
+            this.logBox.Name = "logBox";
+            this.logBox.Size = new System.Drawing.Size(292, 130);
+            this.logBox.TabIndex = 18;
+            this.logBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnLogBoxMouseDoubleClick);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(397, 445);
+            this.ClientSize = new System.Drawing.Size(695, 305);
+            this.Controls.Add(this.logBox);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -324,6 +343,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox cbContinuous;
+        private System.Windows.Forms.ListBox logBox;
     }
 }
 

@@ -9,7 +9,7 @@ namespace V7mBot.AI
 {
     public class Knowledge
     {
-        //--> put that kinda specifics in derived classes
+        //TODO: stuff like this needs to be bot specific
         //const float ZERO_THREAT_DISTANCE = 10;
         const float MINING_THREAT_TO_COST = 50;
         const float TAVERN_THREAT_TO_COST = 50;
@@ -54,6 +54,8 @@ namespace V7mBot.AI
                 return _taverns;
             }
         }
+
+        //TODO: need a hero representation as class
 
         public Position HeroPosition
         {
@@ -102,7 +104,7 @@ namespace V7mBot.AI
         public Knowledge(GameResponse rawData)
         {
             int mapSize = rawData.game.board.size;
-            _zeroThreatDistance = mapSize / 4;
+            _zeroThreatDistance = 1 + (mapSize / 4);
             _map = new TileMap(mapSize);
             _map.Parse(rawData.game.board.tiles);
             _threat = CreateNavGrid(_map);
@@ -124,18 +126,32 @@ namespace V7mBot.AI
             _heroID = rawData.hero.id;
             _hero = rawData.hero;
             
-            //--> put that kinda specifics in derived classes
+            //TODO: --> stuff like this needs to be bot specific
             Chart(_threat, OpponentFilter(_heroID));
-            Chart(_mines, OpponentMineFilter(_heroID), ComputeMiningCostByThreat);
-            Chart(_taverns, TavernFilter(), ComputeTavernCostByThreat);
+            Chart(_mines, OpponentMineFilter(_heroID), (x, y) => ComputeCostByThreat(x, y, MINING_THREAT_TO_COST));
+            Chart(_taverns, TavernFilter(), (x, y) => ComputeCostByThreat(x, y, TAVERN_THREAT_TO_COST));
         }
 
-        delegate float CostSource(int x, int y);
+        private NavGrid CreateNavGrid(TileMap map)
+        {
+            var grid = new NavGrid(map.Width, map.Height);
+            grid.SetNodeCost((x, y) => IsPassable(map[x, y]) ? 1 : -1);
+            return grid;
+        }
 
-        private void Chart(NavGrid nav, Predicate<TileMap.Tile> match, CostSource modifier)
+        private bool IsPassable(TileMap.Tile tile)
+        {
+            if (tile.Type == TileMap.TileType.Free)
+                return true;
+            if (tile.Type == TileMap.TileType.Hero)
+                return true;
+            return false;
+        }
+
+        private void Chart(NavGrid nav, Predicate<TileMap.Tile> match, NavGrid.CostQuery source)
         {
             nav.Reset();
-            nav.SetNodeCost((x, y) => IsPassable(_map[x, y]) ? ComputeMiningCostByThreat(x, y) : -1);
+            nav.SetNodeCost(source);
             foreach (var pos in _map.Find(tile => match(tile)))
                 nav.Seed(pos, 0);
             nav.Flood();
@@ -147,22 +163,6 @@ namespace V7mBot.AI
             foreach (var pos in _map.Find(tile => match(tile)))
                 nav.Seed(pos, 0);
             nav.Flood();
-        }
-
-        private NavGrid CreateNavGrid(TileMap map)
-        {
-            var grid = new NavGrid(map.Width, map.Height);
-            grid.SetNodeCost((x, y) => IsPassable(map[x, y]) ? 1 : -1);
-            return grid;
-        }
-        
-        private bool IsPassable(TileMap.Tile tile)
-        {
-            if (tile.Type == TileMap.TileType.Free)
-                return true;
-            if (tile.Type == TileMap.TileType.Hero && tile.Owner == _heroID)
-                return true;
-            return false;
         }
 
         //PREDICATES
@@ -183,15 +183,14 @@ namespace V7mBot.AI
         }
 
         //COST MODIFIER
-
-        private float ComputeMiningCostByThreat(int x, int y)
+        
+        private float ComputeCostByThreat(int x, int y, float scale)
         {
-            return 1 + GetNormalizedThreat(x, y, _zeroThreatDistance) * MINING_THREAT_TO_COST;
-        }
-
-        private float ComputeTavernCostByThreat(int x, int y)
-        {
-            return 1 + GetNormalizedThreat(x, y, _zeroThreatDistance) * TAVERN_THREAT_TO_COST;
+            var node = _map[x, y];
+            if (node.Type == TileMap.TileType.Free || (node.Type == TileMap.TileType.Hero && node.Owner == _heroID))
+                return GetNormalizedThreat(x, y, _zeroThreatDistance) * scale;
+            else
+                return -1;
         }
     }
 }

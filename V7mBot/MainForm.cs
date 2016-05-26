@@ -80,7 +80,8 @@ namespace V7mBot
             _con.MoveRequired += OnActionRequired;
 
             _knowledge = new Knowledge(e);
-            _bot = new SimpleBot(_knowledge);
+            //_bot = new SimpleBot(_knowledge);
+            _bot = new MurderBot(_knowledge);
             PlayMove(e);
         }
 

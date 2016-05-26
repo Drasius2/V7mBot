@@ -1,13 +1,16 @@
 simpleton: 0r9s62d9
 bitsquid: xdmz43ph
+rascal: 7q42tooa
 
-SIMPLEBOT
+<<SIMPLETON>>
 
-Use Thread to avoid Opponents
+"Friendly pacifist. Just trying to cap mines and avoid opponents"
 
-Flexible transition between Drinking & Minecapping based on distance 
+#DONE: Use Threat to avoid Opponents
+
+#DONE: Flexible transition between Drinking & Minecapping based on distance 
 ...don't run to a far away mine, then realize you won't have enough health to cap it and walk all the way back
 
 Whitelist for friendly Opponents
 
-PHASE II
+<<RASCAL>>

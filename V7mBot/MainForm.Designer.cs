@@ -180,7 +180,7 @@
             this.textKey.Name = "textKey";
             this.textKey.Size = new System.Drawing.Size(83, 22);
             this.textKey.TabIndex = 10;
-            this.textKey.Text = "xdmz43ph";
+            this.textKey.Text = "7q42tooa";
             // 
             // btnJoinTraining
             // 
@@ -307,7 +307,7 @@
             this.Controls.Add(this.pictureBoard);
             this.Controls.Add(this.panel1);
             this.Name = "MainForm";
-            this.Text = "V7m Bot";
+            this.Text = "V7m Bot - Rascal";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTurns)).EndInit();

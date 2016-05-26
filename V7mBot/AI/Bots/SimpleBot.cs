@@ -73,7 +73,7 @@ namespace V7mBot.AI.Bots
                     }
                     else
                     {
-                        if(!IsThreatened(2))
+                        if(!IsThreatened(3))
                             SwitchState(State.Mining);
                         else if(_doneDrinkingTime > 3)
                             SwitchState(State.Mining);

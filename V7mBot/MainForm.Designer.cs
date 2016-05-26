@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbBotSelection = new System.Windows.Forms.ComboBox();
             this.cbContinuous = new System.Windows.Forms.CheckBox();
             this.linkViewGame = new System.Windows.Forms.LinkLabel();
             this.textProgress = new System.Windows.Forms.Label();
@@ -36,9 +37,7 @@
             this.numericTurns = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
             this.textServer = new System.Windows.Forms.TextBox();
-            this.textKey = new System.Windows.Forms.TextBox();
             this.btnJoinTraining = new System.Windows.Forms.Button();
             this.btnJoinArena = new System.Windows.Forms.Button();
             this.pictureBoard = new System.Windows.Forms.PictureBox();
@@ -61,6 +60,7 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.cbBotSelection);
             this.panel1.Controls.Add(this.cbContinuous);
             this.panel1.Controls.Add(this.linkViewGame);
             this.panel1.Controls.Add(this.textProgress);
@@ -68,22 +68,29 @@
             this.panel1.Controls.Add(this.numericTurns);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.textServer);
-            this.panel1.Controls.Add(this.textKey);
             this.panel1.Controls.Add(this.btnJoinTraining);
             this.panel1.Controls.Add(this.btnJoinArena);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(370, 130);
+            this.panel1.Size = new System.Drawing.Size(370, 116);
             this.panel1.TabIndex = 8;
+            // 
+            // cbBotSelection
+            // 
+            this.cbBotSelection.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbBotSelection.FormattingEnabled = true;
+            this.cbBotSelection.Location = new System.Drawing.Point(7, 9);
+            this.cbBotSelection.Name = "cbBotSelection";
+            this.cbBotSelection.Size = new System.Drawing.Size(140, 22);
+            this.cbBotSelection.TabIndex = 19;
             // 
             // cbContinuous
             // 
             this.cbContinuous.AutoSize = true;
             this.cbContinuous.Checked = true;
             this.cbContinuous.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbContinuous.Location = new System.Drawing.Point(92, 41);
+            this.cbContinuous.Location = new System.Drawing.Point(95, 42);
             this.cbContinuous.Name = "cbContinuous";
             this.cbContinuous.Size = new System.Drawing.Size(79, 17);
             this.cbContinuous.TabIndex = 20;
@@ -127,7 +134,7 @@
             0,
             0,
             0});
-            this.numericTurns.Location = new System.Drawing.Point(302, 40);
+            this.numericTurns.Location = new System.Drawing.Point(297, 41);
             this.numericTurns.Name = "numericTurns";
             this.numericTurns.Size = new System.Drawing.Size(53, 20);
             this.numericTurns.TabIndex = 16;
@@ -140,7 +147,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(262, 42);
+            this.label3.Location = new System.Drawing.Point(262, 44);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(34, 13);
             this.label3.TabIndex = 15;
@@ -149,20 +156,12 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(133, 14);
+            this.label2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(153, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
+            this.label2.Size = new System.Drawing.Size(18, 19);
             this.label2.TabIndex = 13;
-            this.label2.Text = "Server";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(25, 13);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "Key";
+            this.label2.Text = "@";
             // 
             // textServer
             // 
@@ -173,18 +172,9 @@
             this.textServer.TabIndex = 11;
             this.textServer.Text = "http://vindinium.org";
             // 
-            // textKey
-            // 
-            this.textKey.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textKey.Location = new System.Drawing.Point(38, 9);
-            this.textKey.Name = "textKey";
-            this.textKey.Size = new System.Drawing.Size(83, 22);
-            this.textKey.TabIndex = 10;
-            this.textKey.Text = "7q42tooa";
-            // 
             // btnJoinTraining
             // 
-            this.btnJoinTraining.Location = new System.Drawing.Point(177, 37);
+            this.btnJoinTraining.Location = new System.Drawing.Point(177, 39);
             this.btnJoinTraining.Name = "btnJoinTraining";
             this.btnJoinTraining.Size = new System.Drawing.Size(79, 23);
             this.btnJoinTraining.TabIndex = 9;
@@ -194,7 +184,7 @@
             // 
             // btnJoinArena
             // 
-            this.btnJoinArena.Location = new System.Drawing.Point(7, 37);
+            this.btnJoinArena.Location = new System.Drawing.Point(7, 39);
             this.btnJoinArena.Name = "btnJoinArena";
             this.btnJoinArena.Size = new System.Drawing.Size(79, 23);
             this.btnJoinArena.TabIndex = 8;
@@ -205,7 +195,7 @@
             // pictureBoard
             // 
             this.pictureBoard.BackColor = System.Drawing.Color.Black;
-            this.pictureBoard.Location = new System.Drawing.Point(15, 169);
+            this.pictureBoard.Location = new System.Drawing.Point(12, 154);
             this.pictureBoard.Name = "pictureBoard";
             this.pictureBoard.Size = new System.Drawing.Size(120, 120);
             this.pictureBoard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -215,7 +205,7 @@
             // pictureThreat
             // 
             this.pictureThreat.BackColor = System.Drawing.Color.Black;
-            this.pictureThreat.Location = new System.Drawing.Point(139, 169);
+            this.pictureThreat.Location = new System.Drawing.Point(136, 154);
             this.pictureThreat.Name = "pictureThreat";
             this.pictureThreat.Size = new System.Drawing.Size(120, 120);
             this.pictureThreat.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -225,7 +215,7 @@
             // pictureMines
             // 
             this.pictureMines.BackColor = System.Drawing.Color.Black;
-            this.pictureMines.Location = new System.Drawing.Point(265, 169);
+            this.pictureMines.Location = new System.Drawing.Point(262, 154);
             this.pictureMines.Name = "pictureMines";
             this.pictureMines.Size = new System.Drawing.Size(120, 120);
             this.pictureMines.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -235,7 +225,7 @@
             // pictureTaverns
             // 
             this.pictureTaverns.BackColor = System.Drawing.Color.Black;
-            this.pictureTaverns.Location = new System.Drawing.Point(391, 169);
+            this.pictureTaverns.Location = new System.Drawing.Point(388, 154);
             this.pictureTaverns.Name = "pictureTaverns";
             this.pictureTaverns.Size = new System.Drawing.Size(120, 120);
             this.pictureTaverns.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -245,7 +235,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 150);
+            this.label5.Location = new System.Drawing.Point(9, 135);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(28, 13);
             this.label5.TabIndex = 14;
@@ -254,7 +244,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(136, 150);
+            this.label6.Location = new System.Drawing.Point(133, 135);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(38, 13);
             this.label6.TabIndex = 15;
@@ -263,7 +253,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(262, 150);
+            this.label7.Location = new System.Drawing.Point(259, 135);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(35, 13);
             this.label7.TabIndex = 16;
@@ -272,7 +262,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(385, 153);
+            this.label8.Location = new System.Drawing.Point(385, 135);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(46, 13);
             this.label8.TabIndex = 17;
@@ -287,7 +277,7 @@
             this.logBox.ItemHeight = 14;
             this.logBox.Location = new System.Drawing.Point(391, 12);
             this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(292, 130);
+            this.logBox.Size = new System.Drawing.Size(292, 116);
             this.logBox.TabIndex = 18;
             this.logBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.OnLogBoxMouseDoubleClick);
             // 
@@ -307,7 +297,7 @@
             this.Controls.Add(this.pictureBoard);
             this.Controls.Add(this.panel1);
             this.Name = "MainForm";
-            this.Text = "V7m Bot - Rascal";
+            this.Text = "V7m Bot";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTurns)).EndInit();
@@ -325,9 +315,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textServer;
-        private System.Windows.Forms.TextBox textKey;
         private System.Windows.Forms.Button btnJoinTraining;
         private System.Windows.Forms.Button btnJoinArena;
         private System.Windows.Forms.NumericUpDown numericTurns;
@@ -344,6 +332,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox cbContinuous;
         private System.Windows.Forms.ListBox logBox;
+        private System.Windows.Forms.ComboBox cbBotSelection;
     }
 }
 

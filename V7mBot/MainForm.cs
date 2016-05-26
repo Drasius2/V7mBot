@@ -15,14 +15,36 @@ namespace V7mBot
 {
     public partial class MainForm : Form
     {
+        struct BotAccount
+        {
+            public BotAccount(string name, string key, Type bot)
+            {
+                Name = name;
+                Key = key;
+                Bot = bot;
+            }
+            public readonly Type Bot;
+            public readonly string Key;
+            public readonly string Name;
+        }
+        List<BotAccount> _accounts = new List<BotAccount>()
+        {
+            new BotAccount("Simpleton", "0r9s62d9", typeof(SimpleBot)),
+            new BotAccount("Rascal", "7q42tooa", typeof(MurderBot))
+        };
+
         Connection _con = null;
         Knowledge _knowledge = null;
+        BotAccount _account;
         Bot _bot = null;
         bool _arena = false;
 
         public MainForm()
         {
             InitializeComponent();
+            foreach (var entry in _accounts)
+                cbBotSelection.Items.Add(entry.Name);
+            cbBotSelection.SelectedIndex = 0;
         }
 
         private void btnJoinTraining_Click(object sender, EventArgs e)
@@ -48,10 +70,18 @@ namespace V7mBot
                 _con.Close();
 
             Log("Waiting for next game...");
-            _con = new Connection(textServer.Text, textKey.Text);
+            _account = GetSelectedAccount();
+            _con = new Connection(textServer.Text, _account.Key);
             _con.MoveRequired += OnGameStarted;
             _con.GameFinished += OnGameFinished;
             _con.RequestFailed += OnRequestFailed;
+        }
+
+        private BotAccount GetSelectedAccount()
+        {
+            string name = cbBotSelection.SelectedItem as string;
+            BotAccount account = _accounts.First(acc => acc.Name == name);
+            return account;
         }
 
         private void OnGameFinished(object sender, GameResponse e)
@@ -80,8 +110,9 @@ namespace V7mBot
             _con.MoveRequired += OnActionRequired;
 
             _knowledge = new Knowledge(e);
+            _bot = Activator.CreateInstance(_account.Bot, _knowledge) as Bot;
             //_bot = new SimpleBot(_knowledge);
-            _bot = new MurderBot(_knowledge);
+            //_bot = new MurderBot(_knowledge);
             PlayMove(e);
         }
 

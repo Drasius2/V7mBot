@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\Bots\MurderBot.cs" />
-    <Compile Include="AI\Bots\ThreeStateBot.cs" />
+    <Compile Include="AI\HeroInfo.cs" />
     <Compile Include="AI\Position.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="AI\Bot.cs" />

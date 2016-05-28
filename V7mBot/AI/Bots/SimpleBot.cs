@@ -22,30 +22,29 @@ namespace V7mBot.AI.Bots
 
         public SimpleBot(Knowledge knowledge) : base(knowledge)
         {
-            _knowledge = knowledge;
         }
 
         private float DistanceToNextMine()
         {
-            var pos = _knowledge.HeroPosition;
-            return _knowledge.Mines[pos.X, pos.Y].PathCost;
+            var pos = Self.Position;
+            return World.Mines[pos.X, pos.Y].PathCost;
         }
 
         private float DistanceToNextTavern()
         {
-            var pos = _knowledge.HeroPosition;
-            return _knowledge.Taverns[pos.X, pos.Y].PathCost;
+            var pos = Self.Position;
+            return World.Taverns[pos.X, pos.Y].PathCost;
         }
 
         private bool IsWinning()
         {
-            return _knowledge.HeroMineRatio * Math.Min(1, 1.2 * _knowledge.HeroGoldRatio) > 1;
+            return Self.MineRatio * Math.Min(1, 1.2 * Self.GoldRatio) > 1;
         }
 
         private bool IsThreatened(float threatDistance)
         {
-            var pos = _knowledge.HeroPosition;
-            return _knowledge.GetNormalizedThreat(pos.X, pos.Y, threatDistance) > 0;
+            var pos = Self.Position;
+            return World.GetNormalizedThreat(pos.X, pos.Y, threatDistance) > 0;
         }
 
         private void SwitchState(State next)
@@ -56,12 +55,12 @@ namespace V7mBot.AI.Bots
 
         public override Move Act()
         {
-            int hp = _knowledge.HeroLife;
+            int hp = Self.Life;
             
             //update state machine
             if (_state == State.Drinking)
             {
-                if(_knowledge.HeroGold < 2)
+                if(Self.Gold < 2)
                     SwitchState(State.Mining);
 
                 if (hp >= START_MINING_HEALTH)
@@ -83,13 +82,13 @@ namespace V7mBot.AI.Bots
             else if (_state == State.Mining)
             {                
                 float hpAtNextMine = hp - DistanceToNextMine();
-                if (_knowledge.HeroGold > 2)
+                if (Self.Gold > 2)
                 {
                     if (IsWinning() && IsThreatened(5))
                         SwitchState(State.Drinking);
                     else if (IsThreatened(3))
                         SwitchState(State.Drinking);
-                    else if (_knowledge.HeroMineRatio > 0 && hpAtNextMine <= START_DRINKING_HEALTH)
+                    else if (Self.MineRatio > 0 && hpAtNextMine <= START_DRINKING_HEALTH)
                         SwitchState(State.Drinking);
                 }
             }
@@ -98,13 +97,13 @@ namespace V7mBot.AI.Bots
             if (_state == State.Drinking)
             {
                 if (hp < START_MINING_HEALTH || DistanceToNextTavern() > 1)
-                    return _knowledge.Taverns.GetMove(_knowledge.HeroPosition);
+                    return World.Taverns.GetMove(Self.Position);
 
                 _doneDrinkingTime++;
                 return Move.Stay;
             }
             else
-                return _knowledge.Mines.GetMove(_knowledge.HeroPosition);
+                return World.Mines.GetMove(Self.Position);
         }
     }
 }

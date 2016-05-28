@@ -12,7 +12,6 @@ namespace V7mBot.AI.Bots
 
         public MurderBot(Knowledge knowledge) : base(knowledge)
         {
-            _knowledge = knowledge;
         }
 
         public override Move Act()
@@ -20,7 +19,7 @@ namespace V7mBot.AI.Bots
             //just approach closest enemy
             //return Move.Stay;
             //return RandomEnumValue<Move>();
-            return _knowledge.Threat.GetMove(_knowledge.HeroPosition);
+            return World.Threat.GetMove(Self.Position);
         }
 
         T RandomEnumValue<T>()

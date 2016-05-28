@@ -16,12 +16,19 @@ namespace V7mBot.AI
 
         private GameResponse _rawData;
         float _zeroThreatDistance;
-        private int _heroID;
-        private Hero _hero;
+        private HeroInfo _hero;
         private TileMap _map;
         private NavGrid _threat;
         private NavGrid _mines;
         private NavGrid _taverns;
+
+        public HeroInfo Hero
+        {
+            get
+            {
+                return _hero;
+            }
+        }
 
         public TileMap Map
         {
@@ -55,61 +62,33 @@ namespace V7mBot.AI
             }
         }
 
-        //TODO: need a hero representation as class
-
-        public Position HeroPosition
+        public GameResponse RawData
         {
             get
             {
-                //json has x & y swapped
-                return new Position(_hero.pos.y, _hero.pos.x);
+                return _rawData;
             }
-        }
-
-        public int HeroLife
-        {
-            get
-            {
-                return _hero.life;
-            }
-        }
-
-        public float HeroMineRatio
-        {
-            get
-            {
-                int maxMines = _rawData.game.heroes.Max(hero => hero.mineCount);
-                if (maxMines == 0)
-                    return 0;
-                return _hero.mineCount / (float)maxMines;
-            }
-        }
-
-        public float HeroGoldRatio
-        {
-            get
-            {
-                int maxGold = _rawData.game.heroes.Max(hero => hero.gold);
-                if (maxGold == 0)
-                    return 0;
-                return _hero.gold / (float)maxGold;
-            }
-        }
-
-        public int HeroGold
-        {
-            get { return _hero.gold; }
         }
 
         public Knowledge(GameResponse rawData)
         {
-            int mapSize = rawData.game.board.size;
-            _zeroThreatDistance = 1 + (mapSize / 4);
+            _rawData = rawData;
+
+            int mapSize = _rawData.game.board.size;
             _map = new TileMap(mapSize);
-            _map.Parse(rawData.game.board.tiles);
+            _map.Parse(_rawData.game.board.tiles);
+
+            _zeroThreatDistance = 1 + (mapSize / 4);
             _threat = CreateNavGrid(_map);
+
             _mines = CreateNavGrid(_map);
+
             _taverns = CreateNavGrid(_map);
+
+            var heroData = _rawData.game.heroes.First(h => h.id == _rawData.hero.id);
+            int index = _rawData.game.heroes.IndexOf(heroData);
+            _hero = new HeroInfo(this, index);
+
         }
 
         public float GetNormalizedThreat(int x, int y, float zeroThreatDistance)
@@ -121,14 +100,11 @@ namespace V7mBot.AI
 
         public void Update(GameResponse rawData)
         {
-            _map.Parse(rawData.game.board.tiles);
             _rawData = rawData;
-            _heroID = rawData.hero.id;
-            _hero = rawData.hero;
-            
+            _map.Parse(rawData.game.board.tiles);
             //TODO: --> stuff like this needs to be bot specific
-            Chart(_threat, OpponentFilter(_heroID));
-            Chart(_mines, OpponentMineFilter(_heroID), (x, y) => ComputeCostByThreat(x, y, MINING_THREAT_TO_COST));
+            Chart(_threat, OpponentFilter(_hero.ID));
+            Chart(_mines, OpponentMineFilter(_hero.ID), (x, y) => ComputeCostByThreat(x, y, MINING_THREAT_TO_COST));
             Chart(_taverns, TavernFilter(), (x, y) => ComputeCostByThreat(x, y, TAVERN_THREAT_TO_COST));
         }
 
@@ -187,7 +163,8 @@ namespace V7mBot.AI
         private float ComputeCostByThreat(int x, int y, float scale)
         {
             var node = _map[x, y];
-            if (node.Type == TileMap.TileType.Free || (node.Type == TileMap.TileType.Hero && node.Owner == _heroID))
+            int id = _hero.ID;
+            if (node.Type == TileMap.TileType.Free || (node.Type == TileMap.TileType.Hero && node.Owner == id))
                 return GetNormalizedThreat(x, y, _zeroThreatDistance) * scale;
             else
                 return -1;

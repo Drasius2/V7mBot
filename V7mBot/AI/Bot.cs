@@ -8,7 +8,17 @@ namespace V7mBot.AI
 {
     public abstract class Bot
     {
-        protected Knowledge _knowledge;
+        private Knowledge _knowledge;
+
+        public HeroInfo Self
+        {
+            get { return _knowledge.Hero; }
+        }
+
+        public Knowledge World
+        {
+            get { return _knowledge; }
+        }
 
         public Bot(Knowledge knowledge)
         {

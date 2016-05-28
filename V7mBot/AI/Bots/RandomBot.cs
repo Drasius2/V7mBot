@@ -12,7 +12,6 @@ namespace V7mBot.AI.Bots
 
         public RandomBot(Knowledge knowledge) : base(knowledge)
         {
-            _knowledge = knowledge;
         }
 
         public override Move Act()

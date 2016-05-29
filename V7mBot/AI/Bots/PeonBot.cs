@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace V7mBot.AI.Bots
 {
-    public class SimpleBot : Bot
+    public class PeonBot : Bot
     {
         enum State
         {
@@ -20,7 +20,7 @@ namespace V7mBot.AI.Bots
         int START_MINING_HEALTH = 75;
         int START_DRINKING_HEALTH = 20;
 
-        public SimpleBot(Knowledge knowledge) : base(knowledge)
+        public PeonBot(Knowledge knowledge) : base(knowledge)
         {
         }
 

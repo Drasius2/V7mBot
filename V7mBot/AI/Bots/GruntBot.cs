@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace V7mBot.AI.Bots
 {
-    public class MurderBot : Bot
+    public class GruntBot : Bot
     {
         Random _rng = new Random();
 
-        public MurderBot(Knowledge knowledge) : base(knowledge)
+        public GruntBot(Knowledge knowledge) : base(knowledge)
         {
+            World.Chart("threat", World.TypeFilter(TileMap.TileType.Hero, World.Hero.ID), World.DefaultCost);
         }
 
         public override Move Act()
@@ -19,13 +20,7 @@ namespace V7mBot.AI.Bots
             //just approach closest enemy
             //return Move.Stay;
             //return RandomEnumValue<Move>();
-            return World.Threat.GetMove(Self.Position);
-        }
-
-        T RandomEnumValue<T>()
-        {
-            var v = Enum.GetValues(typeof(T));
-            return (T)v.GetValue(_rng.Next(v.Length));
+            return World["threat"].GetMove(Self.Position);
         }
     }
 }

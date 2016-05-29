@@ -9,18 +9,21 @@ namespace V7mBot.AI
 {
     public class Knowledge
     {
-        //TODO: stuff like this needs to be bot specific
-        //const float ZERO_THREAT_DISTANCE = 10;
-        const float MINING_THREAT_TO_COST = 50;
-        const float TAVERN_THREAT_TO_COST = 50;
+        public float MiningThreatToCost = 50;
+        public float TavernThreatToCost = 50;
+        
+        private class NavQuery
+        {
+            public NavGrid Grid;
+            public Predicate<TileMap.Tile> Filter;
+            public NavGrid.CostQuery CostFunction;
+        }
 
+        private Dictionary<string, NavQuery> _charts = new Dictionary<string, NavQuery>();       
         private GameResponse _rawData;
         float _zeroThreatDistance;
         private HeroInfo _hero;
         private TileMap _map;
-        private NavGrid _threat;
-        private NavGrid _mines;
-        private NavGrid _taverns;
 
         public HeroInfo Hero
         {
@@ -37,31 +40,6 @@ namespace V7mBot.AI
                 return _map;
             }
         }
-
-        public NavGrid Threat
-        {
-            get
-            {
-                return _threat;
-            }
-        }
-
-        public NavGrid Mines
-        {
-            get
-            {
-                return _mines;
-            }
-        }
-
-        public NavGrid Taverns
-        {
-            get
-            {
-                return _taverns;
-            }
-        }
-
         public GameResponse RawData
         {
             get
@@ -70,32 +48,24 @@ namespace V7mBot.AI
             }
         }
 
+        public NavGrid this[string chartName]
+        {
+            get { return _charts[chartName].Grid; }
+        }
+
         public Knowledge(GameResponse rawData)
         {
             _rawData = rawData;
 
             int mapSize = _rawData.game.board.size;
+            _zeroThreatDistance = 1 + (mapSize / 4);
+
             _map = new TileMap(mapSize);
             _map.Parse(_rawData.game.board.tiles);
-
-            _zeroThreatDistance = 1 + (mapSize / 4);
-            _threat = CreateNavGrid(_map);
-
-            _mines = CreateNavGrid(_map);
-
-            _taverns = CreateNavGrid(_map);
 
             var heroData = _rawData.game.heroes.First(h => h.id == _rawData.hero.id);
             int index = _rawData.game.heroes.IndexOf(heroData);
             _hero = new HeroInfo(this, index);
-
-        }
-
-        public float GetNormalizedThreat(int x, int y, float zeroThreatDistance)
-        {
-            if (zeroThreatDistance == 0)
-                return 0;
-            return Math.Max(0, zeroThreatDistance - _threat[x, y].PathCost) / zeroThreatDistance;
         }
 
         public void Update(GameResponse rawData)
@@ -103,9 +73,10 @@ namespace V7mBot.AI
             _rawData = rawData;
             _map.Parse(rawData.game.board.tiles);
             //TODO: --> stuff like this needs to be bot specific
-            Chart(_threat, OpponentFilter(_hero.ID));
-            Chart(_mines, OpponentMineFilter(_hero.ID), (x, y) => ComputeCostByThreat(x, y, MINING_THREAT_TO_COST));
-            Chart(_taverns, TavernFilter(), (x, y) => ComputeCostByThreat(x, y, TAVERN_THREAT_TO_COST));
+            foreach(var q in _charts.Values)
+            {
+                UpdateChart(q.Grid, q.Filter, q.CostFunction);
+            }
         }
 
         private NavGrid CreateNavGrid(TileMap map)
@@ -123,49 +94,70 @@ namespace V7mBot.AI
                 return true;
             return false;
         }
+        
+        public void Chart(string name, Predicate<TileMap.Tile> match, NavGrid.CostQuery costFunc)
+        {
+            _charts[name] = new NavQuery()
+            {
+                Grid = new NavGrid(Map.Width, Map.Height),
+                CostFunction = costFunc,
+                Filter = match
+            };
+        }
 
-        private void Chart(NavGrid nav, Predicate<TileMap.Tile> match, NavGrid.CostQuery source)
+        private void UpdateChart(NavGrid nav, Predicate<TileMap.Tile> match, NavGrid.CostQuery source)
         {
             nav.Reset();
-            nav.SetNodeCost(source);
+            if(source != null)
+                nav.SetNodeCost(source);
             foreach (var pos in _map.Find(tile => match(tile)))
                 nav.Seed(pos, 0);
             nav.Flood();
         }
-
-        private void Chart(NavGrid nav, Predicate<TileMap.Tile> match)
-        {
-            nav.Reset();
-            foreach (var pos in _map.Find(tile => match(tile)))
-                nav.Seed(pos, 0);
-            nav.Flood();
-        }
-
+        
         //PREDICATES
 
-        private Predicate<TileMap.Tile> TavernFilter()
+        public Predicate<TileMap.Tile> TypeFilter(TileMap.TileType type)
         {
-            return tile => tile.Type == TileMap.TileType.Tavern;
+            return tile => tile.Type == type;
         }
 
-        private Predicate<TileMap.Tile> OpponentMineFilter(int heroID)
+        public Predicate<TileMap.Tile> TypeFilter(TileMap.TileType type, int heroID)
         {
-            return tile => tile.Type == TileMap.TileType.GoldMine && tile.Owner != heroID;
+            return tile => tile.Type == type && tile.Owner != heroID;
         }
 
-        private Predicate<TileMap.Tile> OpponentFilter(int heroID)
-        {
-            return tile => tile.Type == TileMap.TileType.Hero && tile.Owner != heroID;
-        }
 
         //COST MODIFIER
-        
+
+        public NavGrid.CostQuery CostByThreat(float threatToCost)
+        {
+            return (x, y) => ComputeCostByThreat(x, y, threatToCost);
+        }
+
+        public float GetNormalizedThreat(int x, int y, float zeroThreatDistance)
+        {
+            if (zeroThreatDistance == 0)
+                return 0;
+            return Math.Max(0, zeroThreatDistance - this["threat"][x, y].PathCost) / zeroThreatDistance;
+        }
+
         private float ComputeCostByThreat(int x, int y, float scale)
         {
             var node = _map[x, y];
             int id = _hero.ID;
             if (node.Type == TileMap.TileType.Free || (node.Type == TileMap.TileType.Hero && node.Owner == id))
-                return GetNormalizedThreat(x, y, _zeroThreatDistance) * scale;
+                return 1 + GetNormalizedThreat(x, y, _zeroThreatDistance) * scale;
+            else
+                return -1;
+        }
+
+        public float DefaultCost(int x, int y)
+        {
+            var node = _map[x, y];
+            int id = _hero.ID;
+            if (node.Type == TileMap.TileType.Free || (node.Type == TileMap.TileType.Hero && node.Owner == id))
+                return 1;
             else
                 return -1;
         }

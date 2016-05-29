@@ -29,8 +29,8 @@ namespace V7mBot
         }
         List<BotAccount> _accounts = new List<BotAccount>()
         {
-            new BotAccount("Simpleton", "0r9s62d9", typeof(SimpleBot)),
-            new BotAccount("Rascal", "7q42tooa", typeof(MurderBot))
+            new BotAccount("Simpleton", "0r9s62d9", typeof(PeonBot)),
+            new BotAccount("Rascal", "7q42tooa", typeof(GruntBot))
         };
 
         Connection _con = null;
@@ -129,10 +129,11 @@ namespace V7mBot
             Move action = _bot.Act();
             _con.SendMove(action);
             pictureBoard.Image = KnowledgeRenderer.Render(_knowledge.Map, 4);
-            pictureThreat.Image = KnowledgeRenderer.Render(_knowledge.Threat, KnowledgeRenderer.GradientRedToGreen, 4);
-            pictureMines.Image = KnowledgeRenderer.Render(_knowledge.Mines, KnowledgeRenderer.GradientGreenToRed, 4);
-            pictureTaverns.Image = KnowledgeRenderer.Render(_knowledge.Taverns, KnowledgeRenderer.GradientGreenToRed, 4);
-        }
+            pictureThreat.Image = KnowledgeRenderer.Render(_knowledge["threat"], KnowledgeRenderer.GradientRedToGreen, 4);
+            pictureMines.Image = KnowledgeRenderer.Render(_knowledge["mines"], KnowledgeRenderer.GradientGreenToRed, 4);
+            pictureTaverns.Image = KnowledgeRenderer.Render(_knowledge["taverns"], KnowledgeRenderer.GradientGreenToRed, 4);
+    }
+
 
         private void Restart()
         {

@@ -15,27 +15,40 @@ namespace V7mBot.AI.Bots
             Combat
         }
 
-        class DrinkingState : State
+        abstract class GruntState : State
         {
-            const int START_MINING_HEALTH = 75;
-            float START_COMBAT_MINERATIO = 0.2f;
+            const float START_COMBAT_MINERATIO = 0.2f;
+            const float DMG_PER_HIT = 20;
 
             public GruntBot Grunt { get; }
 
-            public DrinkingState(GruntBot owner)
+            public GruntState(GruntBot owner)
             {
                 Grunt = owner;
             }
 
-            public override StateIDs Update()
+            protected bool IsCombatViable()
             {
-                //FIGHTING?
+                int selfHits = (int)Math.Ceiling(Grunt.Self.Life / DMG_PER_HIT);
                 var victim = Grunt.GetClosestEnemy();
+                int victimHits = (int)Math.Ceiling(victim.Life / DMG_PER_HIT);
                 float distanceToVictim = Grunt.DistanceToNextEnemy();
-                bool isVulnerable = victim.Life < Grunt.Self.Life;
+                bool isVulnerable = (distanceToVictim <= 2) ? selfHits >= victimHits : selfHits > victimHits;
                 bool wontHeal = distanceToVictim < Grunt.DistanceToTavernFrom(victim.Position);
                 bool worthy = victim.MineRatio >= START_COMBAT_MINERATIO;
-                if (isVulnerable && wontHeal && worthy)
+                return isVulnerable && wontHeal && worthy;
+            }
+        }
+
+        class DrinkingState : GruntState
+        {
+            const int START_MINING_HEALTH = 75;
+
+            public DrinkingState(GruntBot owner) : base(owner) { }
+
+            public override StateIDs Update()
+            {
+                if(IsCombatViable())
                     return StateIDs.Combat;
 
                 if (Grunt.Self.Gold < 2)
@@ -62,35 +75,24 @@ namespace V7mBot.AI.Bots
             }
         }
 
-        class MiningState : State
+        class MiningState : GruntState
         {
             int START_DRINKING_HEALTH = 20;
-            float START_COMBAT_MINERATIO = 0.2f;
 
-            public GruntBot Grunt { get; }
-
-            public MiningState(GruntBot owner)
-            {
-                Grunt = owner;
-            }
+            public MiningState(GruntBot owner) : base(owner) { }
 
             public override StateIDs Update()
             {
-                //FIGHTING?
-                var victim = Grunt.GetClosestEnemy();
-                bool isVulnerable = victim.Life < Grunt.Self.Life;
-                bool wontHeal = Grunt.DistanceToNextEnemy() < Grunt.DistanceToTavernFrom(victim.Position);
-                bool worthy = victim.MineRatio >= START_COMBAT_MINERATIO;
-                if (isVulnerable && wontHeal && worthy)
-                        return StateIDs.Combat;
+                if (IsCombatViable())
+                    return StateIDs.Combat;
 
                 //DRINKING?
-                if (Grunt.Self.Gold > 2 && Grunt.Self.MineRatio > 0) //somethign to lose & can afford beer?
+                if (Grunt.Self.Gold > 2 && Grunt.Self.MineRatio > 0) //something to lose & can afford beer?
                 {
-                    float hpAtNextMine = Grunt.Self.Life - Grunt.DistanceToNextMine();
                     if ((Grunt.IsWinning() && Grunt.IsThreatened(5)) || Grunt.IsThreatened(3))
                         return StateIDs.Drinking;
 
+                    float hpAtNextMine = Grunt.Self.Life - Grunt.DistanceToNextMine();
                     if (Grunt.Self.MineRatio > 0 && hpAtNextMine <= START_DRINKING_HEALTH)
                         return StateIDs.Drinking;
                 }
@@ -103,22 +105,13 @@ namespace V7mBot.AI.Bots
             }
         }
 
-        class CombatState : State
+        class CombatState : GruntState
         {
-            public GruntBot Grunt { get; }
-
-            public CombatState(GruntBot owner)
-            {
-                Grunt = owner;
-            }
+            public CombatState(GruntBot owner) : base(owner) { }
 
             public override StateIDs Update()
             {
-                //FIGHTING?
-                var victim = Grunt.GetClosestEnemy();
-                bool isVulnerable = victim.Life < Grunt.Self.Life;
-                bool wontHeal = Grunt.DistanceToNextEnemy() < Grunt.DistanceToTavernFrom(victim.Position);
-                if (isVulnerable && wontHeal)
+                if(IsCombatViable())
                     return StateIDs.Combat;
                 
                 return StateIDs.Drinking;

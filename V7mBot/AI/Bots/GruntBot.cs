@@ -6,21 +6,195 @@ using System.Threading.Tasks;
 
 namespace V7mBot.AI.Bots
 {
-    public class GruntBot : Bot
+    public class GruntBot : StatefulBot<GruntBot.StateIDs>
     {
-        Random _rng = new Random();
+        public enum StateIDs
+        {
+            Drinking,
+            Mining,
+            Combat
+        }
+
+        class DrinkingState : State
+        {
+            const int START_MINING_HEALTH = 75;
+            float START_COMBAT_MINERATIO = 0.2f;
+
+            public GruntBot Grunt { get; }
+
+            public DrinkingState(GruntBot owner)
+            {
+                Grunt = owner;
+            }
+
+            public override StateIDs Update()
+            {
+                //FIGHTING?
+                var victim = Grunt.GetClosestEnemy();
+                float distanceToVictim = Grunt.DistanceToNextEnemy();
+                bool isVulnerable = victim.Life < Grunt.Self.Life;
+                bool wontHeal = distanceToVictim < Grunt.DistanceToTavernFrom(victim.Position);
+                bool worthy = victim.MineRatio >= START_COMBAT_MINERATIO;
+                if (isVulnerable && wontHeal && worthy)
+                    return StateIDs.Combat;
+
+                if (Grunt.Self.Gold < 2)
+                    return StateIDs.Mining;
+
+                if (Grunt.Self.MineRatio == 0) //nothing to lose
+                    return StateIDs.Mining;
+
+                if (Grunt.Self.Life < START_MINING_HEALTH)
+                    return StateIDs.Drinking;
+
+                if (!Grunt.IsThreatened(5))
+                    return StateIDs.Mining;
+
+                return StateIDs.Drinking;
+            }
+
+            public override Move Act()
+            {
+                if (Grunt.Self.Life < START_MINING_HEALTH || Grunt.DistanceToNextTavern() > 1)
+                    return Grunt.World["taverns"].GetMove(Grunt.Self.Position);
+
+                return Move.Stay;
+            }
+        }
+
+        class MiningState : State
+        {
+            int START_DRINKING_HEALTH = 20;
+            float START_COMBAT_MINERATIO = 0.2f;
+
+            public GruntBot Grunt { get; }
+
+            public MiningState(GruntBot owner)
+            {
+                Grunt = owner;
+            }
+
+            public override StateIDs Update()
+            {
+                //FIGHTING?
+                var victim = Grunt.GetClosestEnemy();
+                bool isVulnerable = victim.Life < Grunt.Self.Life;
+                bool wontHeal = Grunt.DistanceToNextEnemy() < Grunt.DistanceToTavernFrom(victim.Position);
+                bool worthy = victim.MineRatio >= START_COMBAT_MINERATIO;
+                if (isVulnerable && wontHeal && worthy)
+                        return StateIDs.Combat;
+
+                //DRINKING?
+                if (Grunt.Self.Gold > 2 && Grunt.Self.MineRatio > 0) //somethign to lose & can afford beer?
+                {
+                    float hpAtNextMine = Grunt.Self.Life - Grunt.DistanceToNextMine();
+                    if ((Grunt.IsWinning() && Grunt.IsThreatened(5)) || Grunt.IsThreatened(3))
+                        return StateIDs.Drinking;
+
+                    if (Grunt.Self.MineRatio > 0 && hpAtNextMine <= START_DRINKING_HEALTH)
+                        return StateIDs.Drinking;
+                }
+                return StateIDs.Mining;
+            }
+
+            public override Move Act()
+            {
+                return Grunt.World["mines"].GetMove(Grunt.Self.Position);
+            }
+        }
+
+        class CombatState : State
+        {
+            public GruntBot Grunt { get; }
+
+            public CombatState(GruntBot owner)
+            {
+                Grunt = owner;
+            }
+
+            public override StateIDs Update()
+            {
+                //FIGHTING?
+                var victim = Grunt.GetClosestEnemy();
+                bool isVulnerable = victim.Life < Grunt.Self.Life;
+                bool wontHeal = Grunt.DistanceToNextEnemy() < Grunt.DistanceToTavernFrom(victim.Position);
+                if (isVulnerable && wontHeal)
+                    return StateIDs.Combat;
+                
+                return StateIDs.Drinking;
+            }
+
+            public override Move Act()
+            {
+                return Grunt.World["threat"].GetMove(Grunt.Self.Position);
+            }
+        }
 
         public GruntBot(Knowledge knowledge) : base(knowledge)
         {
             World.Chart("threat", World.TypeFilter(TileMap.TileType.Hero, World.Hero.ID), World.DefaultCost);
+            World.Chart("mines", World.TypeFilter(TileMap.TileType.GoldMine, World.Hero.ID), World.CostByThreat(50));
+            World.Chart("taverns", World.TypeFilter(TileMap.TileType.Tavern), World.CostByThreat(50));
+            World.Chart("beer_dist", World.TypeFilter(TileMap.TileType.Tavern), World.AnyHero);
+
+            Register(StateIDs.Drinking, new DrinkingState(this));
+            Register(StateIDs.Mining, new MiningState(this));
+            Register(StateIDs.Combat, new CombatState(this));
+            Enter(StateIDs.Mining);
+        }
+
+        private float DistanceToNextMine()
+        {
+            var pos = Self.Position;
+            return World["mines"][pos.X, pos.Y].PathCost;
+        }
+
+        private float DistanceToNextTavern()
+        {
+            var pos = Self.Position;
+            return World["taverns"][pos.X, pos.Y].PathCost;
+        }
+        private float DistanceToNextEnemy()
+        {
+            var pos = Self.Position;
+            return World["threat"][pos.X, pos.Y].PathCost;
+        }
+        public float DistanceToTavernFrom(Position pos)
+        {
+            return World["beer_dist"][pos.X, pos.Y].PathCost;
+        }
+
+        private bool IsWinning()
+        {
+            return Self.MineRatio * Math.Min(1, 1.2 * Self.GoldRatio) > 1;
+        }
+
+        private bool IsThreatened(float threatDistance)
+        {
+            var pos = Self.Position;
+            return World.GetNormalizedThreat(pos.X, pos.Y, threatDistance) > 0;
+        }
+
+        private HeroInfo GetClosestEnemy()
+        {
+            NavGrid grid = World["threat"];
+            int idx = grid.IndexOf(Self.Position);
+            while(grid[idx].PathCost > 0)
+                idx = grid[idx].Previous;
+
+            Position pos = grid.PositionOf(idx);
+            HeroInfo hero = World.Heroes.Where(h => h.Position == pos).FirstOrDefault();
+            return hero;
         }
 
         public override Move Act()
         {
-            //just approach closest enemy
-            //return Move.Stay;
-            //return RandomEnumValue<Move>();
-            return World["threat"].GetMove(Self.Position);
+            HeroInfo info = GetClosestEnemy();
+            if(info != null)
+            {
+                Console.WriteLine(_state.ToString() + " -> " + info.ID + "("+info.RawHero.name + ") " + DistanceToTavernFrom(info.Position));
+            }
+            return base.Act();
         }
     }
 }

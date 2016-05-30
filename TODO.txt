@@ -14,3 +14,12 @@ rascal: 7q42tooa
 Whitelist for friendly Opponents
 
 <<RASCAL>>
+
+"Mining, Drinking and Fighting - he does it all"
+
+Reduce combat chase range, especially on small maps.
+
+Prevent dead loops by adding up the past X number of fields visited and use that as a negative bias.
+
+When chasing an opponent that is one field ahead always have 20hp to spare as he could turn around and get the first hit.
+Now, if we can get the first hit. (make only one move and deal dmg) then we could have 20hp less and still win.

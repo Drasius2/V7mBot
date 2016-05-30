@@ -22,7 +22,7 @@ namespace V7mBot.AI
             }
         }
 
-        State _state = null;
+        protected State _state = null;
         Dictionary<T, State> _states = new Dictionary<T, State>();
 
 

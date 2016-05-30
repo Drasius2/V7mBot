@@ -28,7 +28,7 @@ namespace V7mBot.AI
         }
         public static bool operator ==(Position a, Position b)
         {
-            return a.X == b.Y && a.Y == b.Y;
+            return a.X == b.X && a.Y == b.Y;
         }
         public static bool operator !=(Position a, Position b)
         {

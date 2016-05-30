@@ -23,6 +23,7 @@ namespace V7mBot.AI
         private GameResponse _rawData;
         float _zeroThreatDistance;
         private HeroInfo _hero;
+        private List<HeroInfo> _heroes;
         private TileMap _map;
 
         public HeroInfo Hero
@@ -30,6 +31,14 @@ namespace V7mBot.AI
             get
             {
                 return _hero;
+            }
+        }
+
+        public IEnumerable<HeroInfo> Heroes
+        {
+            get
+            {
+                return _heroes;
             }
         }
 
@@ -63,9 +72,9 @@ namespace V7mBot.AI
             _map = new TileMap(mapSize);
             _map.Parse(_rawData.game.board.tiles);
 
-            var heroData = _rawData.game.heroes.First(h => h.id == _rawData.hero.id);
-            int index = _rawData.game.heroes.IndexOf(heroData);
-            _hero = new HeroInfo(this, index);
+            int index = 0;
+            _heroes = _rawData.game.heroes.Select(data => new HeroInfo(this, index++)).ToList();
+            _hero = _heroes.First(h => h.ID == _rawData.hero.id);
         }
 
         public void Update(GameResponse rawData)
@@ -78,14 +87,7 @@ namespace V7mBot.AI
                 UpdateChart(q.Grid, q.Filter, q.CostFunction);
             }
         }
-
-        private NavGrid CreateNavGrid(TileMap map)
-        {
-            var grid = new NavGrid(map.Width, map.Height);
-            grid.SetNodeCost((x, y) => IsPassable(map[x, y]) ? 1 : -1);
-            return grid;
-        }
-
+        
         private bool IsPassable(TileMap.Tile tile)
         {
             if (tile.Type == TileMap.TileType.Free)
@@ -157,6 +159,15 @@ namespace V7mBot.AI
             var node = _map[x, y];
             int id = _hero.ID;
             if (node.Type == TileMap.TileType.Free || (node.Type == TileMap.TileType.Hero && node.Owner == id))
+                return 1;
+            else
+                return -1;
+        }
+
+        public float AnyHero(int x, int y)
+        {
+            var node = _map[x, y];
+            if (node.Type == TileMap.TileType.Free || node.Type == TileMap.TileType.Hero)
                 return 1;
             else
                 return -1;

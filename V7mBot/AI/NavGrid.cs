@@ -35,9 +35,19 @@ namespace V7mBot.AI
             get { return _height; }
         }
 
+        public Node this[Position pos]
+        {
+            get { return _grid[IndexOf(pos)]; }
+        }
+
         public Node this[int x, int y]
         {
             get { return _grid[IndexOf(x, y)]; }
+        }
+
+        public Node this[int i]
+        {
+            get { return _grid[i]; }
         }
 
         public float MaxPathCost
@@ -122,14 +132,34 @@ namespace V7mBot.AI
             _maxPathCost = _grid.Where(n => n.PathCost < NullCost).Select(n => (int?)n.PathCost).Max() ?? 0;
         }
 
+        public Position PositionOf(int index)
+        {
+            int y = index / _width;
+            return new Position(index - y * _width, y);
+        }
+
+        public int IndexOf(Position pos)
+        {
+            return pos.Y * _width + pos.X;
+        }
+
+        public int IndexOf(int x, int y)
+        {
+            return y * _width + x;
+        }
+
         public Move GetMove(Position pos)
         {
-            return GetMove(pos.X, pos.Y);
+            return GetMove(IndexOf(pos));
         }
 
         public Move GetMove(int x, int y)
         {
-            int current = IndexOf(x, y);
+            return GetMove(IndexOf(x, y));
+        }
+
+        public Move GetMove(int current)
+        {
             int prev = _grid[current].Previous;
             if (prev == -1)
                 return Move.Stay;
@@ -160,11 +190,5 @@ namespace V7mBot.AI
             if (x < _width - 1) //RIGHT
                 yield return i + 1;
         }
-
-        private int IndexOf(int x, int y)
-        {
-            return y * _width +x;
-        }
-
     }
 }

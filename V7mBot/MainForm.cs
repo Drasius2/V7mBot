@@ -30,7 +30,8 @@ namespace V7mBot
         List<BotAccount> _accounts = new List<BotAccount>()
         {
             new BotAccount("Simpleton", "0r9s62d9", typeof(PeonBot)),
-            new BotAccount("Rascal", "7q42tooa", typeof(GruntBot))
+            new BotAccount("Rascal", "7q42tooa", typeof(GruntBot)),
+            new BotAccount("Bitsquid", "xdmz43ph", typeof(RaiderBot))
         };
 
         Connection _con = null;

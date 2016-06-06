@@ -47,10 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\Bots\ActionBot.cs" />
     <Compile Include="AI\Bots\GruntBot.cs" />
+    <Compile Include="AI\Bots\RaiderBot.cs" />
     <Compile Include="AI\HeroInfo.cs" />
     <Compile Include="AI\Position.cs" />
-    <Compile Include="AI\StatefulBot.cs" />
+    <Compile Include="AI\Bots\StatefulBot.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="AI\Bot.cs" />
     <Compile Include="AI\Bots\RandomBot.cs" />

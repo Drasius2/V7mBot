@@ -11,6 +11,7 @@ namespace V7mBot.AI.Bots
 
         abstract class RaiderAction : Action
         {
+            public const float OVERRIDE_RATING = 10;
             public const float NULL_RATING = -1;
 
             public float Weight = 1.0f;
@@ -68,6 +69,10 @@ namespace V7mBot.AI.Bots
                 float scared = 0.5f + 0.5f * Raider.GetThreat(5);
                 //Range 0..1
                 float drinkValue = income * scared * distanceMod * Linstep(MAX_HP, MAX_HP - HP_PER_BEER, self.Life);
+                //if drinking and no mine close fill HP up
+                if (distanceToTavern == 1 && distanceToMine > 3 && self.Life < MAX_HP - 10)
+                    drinkValue = 1;
+
                 return base.ComputeRating() * drinkValue;
             }
 
@@ -120,6 +125,9 @@ namespace V7mBot.AI.Bots
                     return NULL_RATING;
                 if (distanceToVictim > 2 && selfHits <= victimHits)
                     return NULL_RATING;
+
+                if (distanceToVictim == 1)
+                    return OVERRIDE_RATING;
 
                 bool wontHeal = distanceToVictim < Raider.DistanceToTavernFrom(victim.Position);
                 return base.ComputeRating() * (wontHeal ? 1 : 0.5f) * Sigmoid(MEDIAN_DISTANCE - distanceToVictim);

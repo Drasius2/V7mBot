@@ -23,6 +23,14 @@ namespace V7mBot.AI.Bots
         {
             var v = Enum.GetValues(typeof(T));
             return (T)v.GetValue(_rng.Next(v.Length));
-        }        
+        }
+
+        override public IEnumerable<VisualizationRequest> Visualizaton
+        {
+            get
+            {
+                return Enumerable.Empty<VisualizationRequest>();
+            }
+        }
     }
 }

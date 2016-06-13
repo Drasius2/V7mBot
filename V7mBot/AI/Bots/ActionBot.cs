@@ -20,6 +20,11 @@ namespace V7mBot.AI.Bots
             virtual public void Start(Action previous)
             {
             }
+
+            virtual public IEnumerable<VisualizationRequest> GetVisRequests()
+            {
+                return Enumerable.Empty<VisualizationRequest>();
+            }
         }
 
         protected Action _action = null;

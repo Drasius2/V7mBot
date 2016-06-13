@@ -64,9 +64,22 @@ namespace V7mBot.AI
             for (int i = 0; i < width * height; i++)
                 _grid.Add(new Node());
         }
-                
+
         public delegate float CostQuery(int x, int y);
-        public void SetNodeCost(CostQuery query)
+
+        public void SetSeeds(CostQuery query)
+        {
+            int i = 0;
+            for (int y = 0; y < _height; y++)
+                for (int x = 0; x < _width; x++, i++)
+                {
+                    float seedCost = query(x, y);
+                    if (seedCost >= 0)
+                        Seed(x, y, seedCost);
+                }
+        }
+
+        public void SetCosts(CostQuery query)
         {
             int i = 0;
             for (int y = 0; y < _height; y++)
@@ -88,7 +101,7 @@ namespace V7mBot.AI
                 }
         }
 
-        internal void Seed(Position pos, int cost)
+        internal void Seed(Position pos, float cost)
         {
             Seed(pos.X, pos.Y, cost);
         }

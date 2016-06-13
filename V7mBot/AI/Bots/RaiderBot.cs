@@ -8,7 +8,6 @@ namespace V7mBot.AI.Bots
 {
     public class RaiderBot : ActionBot
     {
-
         abstract class RaiderAction : Action
         {
             public const float OVERRIDE_RATING = 10;
@@ -64,7 +63,7 @@ namespace V7mBot.AI.Bots
                 var self = Raider.Self;
                 float distanceToTavern = Raider.DistanceToNextTavern();
                 float distanceToMine = Raider.DistanceToNextMine();
-                float distanceMod = Sigmoid(distanceToMine - distanceToTavern);
+                float distanceMod = Sigmoid(0.2f * (distanceToMine - distanceToTavern));
                 float income = 0.5f + 0.5f * self.MineRatio;
                 float scared = 0.5f + 0.5f * Raider.GetThreat(5);
                 //Range 0..1
@@ -80,6 +79,14 @@ namespace V7mBot.AI.Bots
             {
                 return Raider.World["taverns"].GetMove(Raider.Self.Position);
             }
+
+            override public IEnumerable<VisualizationRequest> GetVisRequests()
+            {
+                yield return new VisualizationRequest("threat", "[Drink]");
+                yield return new VisualizationRequest("taverns", "Taverns");
+                yield return new VisualizationRequest("beer_dist", "Beer Dist");
+            }
+
         }
 
         class MiningAction : RaiderAction
@@ -104,6 +111,12 @@ namespace V7mBot.AI.Bots
             public override Move Act()
             {
                 return Raider.World["mines"].GetMove(Raider.Self.Position);
+            }
+
+            override public IEnumerable<VisualizationRequest> GetVisRequests()
+            {
+                yield return new VisualizationRequest("threat", "[Mines]");
+                yield return new VisualizationRequest("mines", "Mines");
             }
         }
 
@@ -137,7 +150,49 @@ namespace V7mBot.AI.Bots
             {
                 return Raider.World["threat"].GetMove(Raider.Self.Position);
             }
+
+            override public IEnumerable<VisualizationRequest> GetVisRequests()
+            {
+                yield return new VisualizationRequest("threat", "[Combat]");
+            }
         }
+
+        class EscapeAction : RaiderAction
+        {
+            const float DMG_PER_HIT = 20;
+            const int MEDIAN_DISTANCE = 4;
+
+            public EscapeAction(RaiderBot owner) : base(owner) { }
+
+            public override float ComputeRating()
+            {
+                var self = Raider.Self;
+                int selfHits = (int)Math.Ceiling(self.Life / DMG_PER_HIT);
+                var enemy = Raider.GetClosestEnemy();
+                int enemyHits = (int)Math.Ceiling(enemy.Life / DMG_PER_HIT);
+                float distanceToVictim = Raider.DistanceToNextEnemy();
+                if (distanceToVictim <= 2 && selfHits < enemyHits)
+                    return OVERRIDE_RATING;
+                if (distanceToVictim > 2 && selfHits <= enemyHits)
+                    return base.ComputeRating() * Sigmoid(MEDIAN_DISTANCE - distanceToVictim);
+
+                return NULL_RATING;
+            }
+
+
+            public override Move Act()
+            {
+                return Raider.World["escape_routes"].GetMove(Raider.Self.Position);
+            }
+
+            override public IEnumerable<VisualizationRequest> GetVisRequests()
+            {
+                yield return new VisualizationRequest("threat", "[Escape]");
+                yield return new VisualizationRequest("free_space", "Free Space");
+                yield return new VisualizationRequest("escape_routes", "Escape Routes");
+            }
+        }
+
 
         class StayAction : RaiderAction
         {
@@ -147,20 +202,52 @@ namespace V7mBot.AI.Bots
             {
                 return Move.Stay;
             }
+
+            override public IEnumerable<VisualizationRequest> GetVisRequests()
+            {
+                yield return new VisualizationRequest("threat", "[Stay]");
+            }
         }
 
         public RaiderBot(Knowledge knowledge) : base(knowledge)
         {
+            float zeroThreatDistance = 1 + (World.Map.Width / 4);
+            TileMap.TileType heroOrFree = TileMap.TileType.Hero | TileMap.TileType.Free;
             World.Chart("threat", World.TypeFilter(TileMap.TileType.Hero, World.Hero.ID), World.DefaultCost);
-            World.Chart("mines", World.TypeFilter(TileMap.TileType.GoldMine, World.Hero.ID), World.CostByThreat(50));
-            World.Chart("taverns", World.TypeFilter(TileMap.TileType.Tavern), World.CostByThreat(50));
-            World.Chart("beer_dist", World.TypeFilter(TileMap.TileType.Tavern), World.AnyHero);
+            World.Chart("mines", World.TypeFilter(TileMap.TileType.GoldMine, World.Hero.ID), World.CostByChart("threat", zeroThreatDistance, 50));
+            World.Chart("taverns", World.TypeFilter(TileMap.TileType.Tavern), World.CostByChart("threat", zeroThreatDistance, 50));
+            World.Chart("beer_dist", World.TypeFilter(TileMap.TileType.Tavern), node => (node.Type & heroOrFree) > 0 ? 1 : -1);
+            World.Chart("free_space", World.TypeFilter(~heroOrFree), FreeSpaceChartCosts);
+            World.Chart("escape_routes", SeedSafeSpaces, World.CostByChart("threat", zeroThreatDistance, 20));
 
             Add(new StayAction(this) { Weight = 0f });
             Add(new DrinkingAction(this) { Weight = 2.0f });
             Add(new MiningAction(this));
             Add(new CombatAction(this));
+            Add(new EscapeAction(this) { Weight = 1.0f });
         }
+
+        private float SeedSafeSpaces(TileMap map, int x, int y)
+        {
+            if (map[x, y].Type == TileMap.TileType.Tavern)
+                return 0;
+
+            float free = World.SampleChartNormalized(x, y, "free_space", 3);
+            float threat = World.SampleChartNormalized(x, y, "threat", 10);
+            float seedCost = (1 + free) * threat * 500;
+            if (free < 0.5)
+                return seedCost;
+            else
+                return -1;
+        }
+
+        private float FreeSpaceChartCosts(TileMap map, int x, int y)
+        {
+            TileMap.TileType heroOrFree = TileMap.TileType.Hero | TileMap.TileType.Free;
+            bool isHeroOrFree = (map[x, y].Type & heroOrFree) > 0;
+            return isHeroOrFree ? 1 : -1;
+        }
+
 
         private float DistanceToNextMine()
         {
@@ -191,7 +278,7 @@ namespace V7mBot.AI.Bots
         private float GetThreat(float threatDistance)
         {
             var pos = Self.Position;
-            return World.GetNormalizedThreat(pos.X, pos.Y, threatDistance);
+            return World.SampleChartNormalized(pos.X, pos.Y, "threat", threatDistance);
         }
 
         private HeroInfo GetClosestEnemy()
@@ -206,5 +293,12 @@ namespace V7mBot.AI.Bots
             return hero;
         }
 
+        override public IEnumerable<VisualizationRequest> Visualizaton
+        {
+            get
+            {
+                return SelectBest().GetVisRequests();
+            }
+        }
     }
 }

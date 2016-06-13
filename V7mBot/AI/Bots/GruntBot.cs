@@ -128,11 +128,12 @@ namespace V7mBot.AI.Bots
 
         public GruntBot(Knowledge knowledge) : base(knowledge)
         {
+            float zeroThreatDistance = 1 + (World.Map.Width / 4);
             World.Chart("threat", World.TypeFilter(TileMap.TileType.Hero, World.Hero.ID), World.DefaultCost);
-            World.Chart("mines", World.TypeFilter(TileMap.TileType.GoldMine, World.Hero.ID), World.CostByThreat(50));
-            World.Chart("taverns", World.TypeFilter(TileMap.TileType.Tavern), World.CostByThreat(50));
-            World.Chart("beer_dist", World.TypeFilter(TileMap.TileType.Tavern), World.AnyHero);
-
+            World.Chart("mines", World.TypeFilter(TileMap.TileType.GoldMine, World.Hero.ID), World.CostByChart("threat", zeroThreatDistance, 50));
+            World.Chart("taverns", World.TypeFilter(TileMap.TileType.Tavern), World.CostByChart("threat", zeroThreatDistance, 50));
+            TileMap.TileType heroOrFree = TileMap.TileType.Hero | TileMap.TileType.Free;
+            World.Chart("beer_dist", World.TypeFilter(TileMap.TileType.Tavern), node => (node.Type & heroOrFree) > 0 ? 1 : -1);
             Register(StateIDs.Drinking, new DrinkingState(this));
             Register(StateIDs.Mining, new MiningState(this));
             Register(StateIDs.Combat, new CombatState(this));
@@ -168,7 +169,7 @@ namespace V7mBot.AI.Bots
         private bool IsThreatened(float threatDistance)
         {
             var pos = Self.Position;
-            return World.GetNormalizedThreat(pos.X, pos.Y, threatDistance) > 0;
+            return World.SampleChartNormalized(pos.X, pos.Y, "threat", threatDistance) > 0;
         }
 
         private HeroInfo GetClosestEnemy()
@@ -181,6 +182,16 @@ namespace V7mBot.AI.Bots
             Position pos = grid.PositionOf(idx);
             HeroInfo hero = World.Heroes.Where(h => h.Position == pos).FirstOrDefault();
             return hero;
+        }
+
+        override public IEnumerable<VisualizationRequest> Visualizaton
+        {
+            get
+            {
+                yield return new VisualizationRequest("threat", "Threat");
+                yield return new VisualizationRequest("mines", "Mines");
+                yield return new VisualizationRequest("beer_dist", "Beer");
+            }
         }
     }
 }

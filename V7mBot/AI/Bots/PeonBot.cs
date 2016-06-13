@@ -96,9 +96,10 @@ namespace V7mBot.AI.Bots
 
         public PeonBot(Knowledge knowledge) : base(knowledge)
         {            
+            float zeroThreatDistance = 1 + (World.Map.Width / 4);
             World.Chart("threat", World.TypeFilter(TileMap.TileType.Hero, World.Hero.ID), World.DefaultCost);
-            World.Chart("mines", World.TypeFilter(TileMap.TileType.GoldMine, World.Hero.ID), World.CostByThreat(50));
-            World.Chart("taverns", World.TypeFilter(TileMap.TileType.Tavern, World.Hero.ID), World.CostByThreat(50));
+            World.Chart("mines", World.TypeFilter(TileMap.TileType.GoldMine, World.Hero.ID), World.CostByChart("threat", zeroThreatDistance, 50));
+            World.Chart("taverns", World.TypeFilter(TileMap.TileType.Tavern), World.CostByChart("threat", zeroThreatDistance, 50));
 
             Register(StateIDs.Drinking, new DrinkingState(this));
             Register(StateIDs.Mining, new MiningState(this));
@@ -126,7 +127,17 @@ namespace V7mBot.AI.Bots
         private bool IsThreatened(float threatDistance)
         {
             var pos = Self.Position;
-            return World.GetNormalizedThreat(pos.X, pos.Y, threatDistance) > 0;
+            return World.SampleChartNormalized(pos.X, pos.Y, "threat", threatDistance) > 0;
+        }
+
+        override public IEnumerable<VisualizationRequest> Visualizaton
+        {
+            get
+            {
+                yield return new VisualizationRequest("threat", "Threat");
+                yield return new VisualizationRequest("mines", "Mines");
+                yield return new VisualizationRequest("taverns", "Taverns");
+            }
         }
     }
 }

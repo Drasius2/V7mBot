@@ -34,6 +34,13 @@ namespace V7mBot
             new BotAccount("Bitsquid", "xdmz43ph", typeof(RaiderBot))
         };
 
+        struct VisControls
+        {
+            public Label Description;
+            public PictureBox Image;
+        }
+        List<VisControls> _visCtrls = new List<VisControls>();
+
         Connection _con = null;
         Knowledge _knowledge = null;
         BotAccount _account;
@@ -46,6 +53,11 @@ namespace V7mBot
             foreach (var entry in _accounts)
                 cbBotSelection.Items.Add(entry.Name);
             cbBotSelection.SelectedIndex = 0;
+
+            //add the controls dynamically
+            _visCtrls.Add(new VisControls() { Description = labelChart0, Image = pictureChart0 });
+            _visCtrls.Add(new VisControls() { Description = labelChart1, Image = pictureChart1 });
+            _visCtrls.Add(new VisControls() { Description = labelChart2, Image = pictureChart2 });
         }
 
         private void btnJoinTraining_Click(object sender, EventArgs e)
@@ -112,8 +124,6 @@ namespace V7mBot
 
             _knowledge = new Knowledge(e);
             _bot = Activator.CreateInstance(_account.Bot, _knowledge) as Bot;
-            //_bot = new SimpleBot(_knowledge);
-            //_bot = new MurderBot(_knowledge);
             PlayMove(e);
         }
 
@@ -130,10 +140,20 @@ namespace V7mBot
             Move action = _bot.Act();
             _con.SendMove(action);
             pictureBoard.Image = KnowledgeRenderer.Render(_knowledge.Map, 4);
-            pictureThreat.Image = KnowledgeRenderer.Render(_knowledge["threat"], KnowledgeRenderer.GradientRedToGreen, 4);
-            pictureMines.Image = KnowledgeRenderer.Render(_knowledge["mines"], KnowledgeRenderer.GradientGreenToRed, 4);
-            pictureTaverns.Image = KnowledgeRenderer.Render(_knowledge["taverns"], KnowledgeRenderer.GradientGreenToRed, 4);
-    }
+
+            var visRequests = _bot.Visualizaton.ToList();
+            int max = Math.Min(visRequests.Count, _visCtrls.Count);
+            for(int i = 0; i < max; i++)
+            {
+                _visCtrls[i].Description.Text = visRequests[i].Description;
+                _visCtrls[i].Image.Image = KnowledgeRenderer.Render(_knowledge[visRequests[i].ChartName], KnowledgeRenderer.GradientRedToGreen, 4);
+            }
+            for(int i = max; i < _visCtrls.Count; i++)
+            {
+                _visCtrls[i].Description.Text = "...";
+                _visCtrls[i].Image.Image = null;
+            }
+        }
 
 
         private void Restart()

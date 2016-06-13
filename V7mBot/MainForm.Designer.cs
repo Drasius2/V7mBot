@@ -41,20 +41,20 @@
             this.btnJoinTraining = new System.Windows.Forms.Button();
             this.btnJoinArena = new System.Windows.Forms.Button();
             this.pictureBoard = new System.Windows.Forms.PictureBox();
-            this.pictureThreat = new System.Windows.Forms.PictureBox();
-            this.pictureMines = new System.Windows.Forms.PictureBox();
-            this.pictureTaverns = new System.Windows.Forms.PictureBox();
+            this.pictureChart0 = new System.Windows.Forms.PictureBox();
+            this.pictureChart1 = new System.Windows.Forms.PictureBox();
+            this.pictureChart2 = new System.Windows.Forms.PictureBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
+            this.labelChart0 = new System.Windows.Forms.Label();
+            this.labelChart1 = new System.Windows.Forms.Label();
+            this.labelChart2 = new System.Windows.Forms.Label();
             this.logBox = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTurns)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoard)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureThreat)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureMines)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureTaverns)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureChart0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureChart1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureChart2)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -202,35 +202,35 @@
             this.pictureBoard.TabIndex = 9;
             this.pictureBoard.TabStop = false;
             // 
-            // pictureThreat
+            // pictureChart0
             // 
-            this.pictureThreat.BackColor = System.Drawing.Color.Black;
-            this.pictureThreat.Location = new System.Drawing.Point(136, 154);
-            this.pictureThreat.Name = "pictureThreat";
-            this.pictureThreat.Size = new System.Drawing.Size(120, 120);
-            this.pictureThreat.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureThreat.TabIndex = 10;
-            this.pictureThreat.TabStop = false;
+            this.pictureChart0.BackColor = System.Drawing.Color.Black;
+            this.pictureChart0.Location = new System.Drawing.Point(136, 154);
+            this.pictureChart0.Name = "pictureChart0";
+            this.pictureChart0.Size = new System.Drawing.Size(120, 120);
+            this.pictureChart0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureChart0.TabIndex = 10;
+            this.pictureChart0.TabStop = false;
             // 
-            // pictureMines
+            // pictureChart1
             // 
-            this.pictureMines.BackColor = System.Drawing.Color.Black;
-            this.pictureMines.Location = new System.Drawing.Point(262, 154);
-            this.pictureMines.Name = "pictureMines";
-            this.pictureMines.Size = new System.Drawing.Size(120, 120);
-            this.pictureMines.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureMines.TabIndex = 11;
-            this.pictureMines.TabStop = false;
+            this.pictureChart1.BackColor = System.Drawing.Color.Black;
+            this.pictureChart1.Location = new System.Drawing.Point(262, 154);
+            this.pictureChart1.Name = "pictureChart1";
+            this.pictureChart1.Size = new System.Drawing.Size(120, 120);
+            this.pictureChart1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureChart1.TabIndex = 11;
+            this.pictureChart1.TabStop = false;
             // 
-            // pictureTaverns
+            // pictureChart2
             // 
-            this.pictureTaverns.BackColor = System.Drawing.Color.Black;
-            this.pictureTaverns.Location = new System.Drawing.Point(388, 154);
-            this.pictureTaverns.Name = "pictureTaverns";
-            this.pictureTaverns.Size = new System.Drawing.Size(120, 120);
-            this.pictureTaverns.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.pictureTaverns.TabIndex = 12;
-            this.pictureTaverns.TabStop = false;
+            this.pictureChart2.BackColor = System.Drawing.Color.Black;
+            this.pictureChart2.Location = new System.Drawing.Point(388, 154);
+            this.pictureChart2.Name = "pictureChart2";
+            this.pictureChart2.Size = new System.Drawing.Size(120, 120);
+            this.pictureChart2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureChart2.TabIndex = 12;
+            this.pictureChart2.TabStop = false;
             // 
             // label5
             // 
@@ -241,32 +241,32 @@
             this.label5.TabIndex = 14;
             this.label5.Text = "Map";
             // 
-            // label6
+            // labelChart0
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(133, 135);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(38, 13);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Threat";
+            this.labelChart0.AutoSize = true;
+            this.labelChart0.Location = new System.Drawing.Point(133, 135);
+            this.labelChart0.Name = "labelChart0";
+            this.labelChart0.Size = new System.Drawing.Size(41, 13);
+            this.labelChart0.TabIndex = 15;
+            this.labelChart0.Text = "Chart 0";
             // 
-            // label7
+            // labelChart1
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(259, 135);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(35, 13);
-            this.label7.TabIndex = 16;
-            this.label7.Text = "Mines";
+            this.labelChart1.AutoSize = true;
+            this.labelChart1.Location = new System.Drawing.Point(259, 135);
+            this.labelChart1.Name = "labelChart1";
+            this.labelChart1.Size = new System.Drawing.Size(41, 13);
+            this.labelChart1.TabIndex = 16;
+            this.labelChart1.Text = "Chart 1";
             // 
-            // label8
+            // labelChart2
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(385, 135);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(46, 13);
-            this.label8.TabIndex = 17;
-            this.label8.Text = "Taverns";
+            this.labelChart2.AutoSize = true;
+            this.labelChart2.Location = new System.Drawing.Point(385, 135);
+            this.labelChart2.Name = "labelChart2";
+            this.labelChart2.Size = new System.Drawing.Size(41, 13);
+            this.labelChart2.TabIndex = 17;
+            this.labelChart2.Text = "Chart 2";
             // 
             // logBox
             // 
@@ -287,13 +287,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(695, 305);
             this.Controls.Add(this.logBox);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
+            this.Controls.Add(this.labelChart2);
+            this.Controls.Add(this.labelChart1);
+            this.Controls.Add(this.labelChart0);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.pictureTaverns);
-            this.Controls.Add(this.pictureMines);
-            this.Controls.Add(this.pictureThreat);
+            this.Controls.Add(this.pictureChart2);
+            this.Controls.Add(this.pictureChart1);
+            this.Controls.Add(this.pictureChart0);
             this.Controls.Add(this.pictureBoard);
             this.Controls.Add(this.panel1);
             this.Name = "MainForm";
@@ -302,9 +302,9 @@
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTurns)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoard)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureThreat)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureMines)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureTaverns)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureChart0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureChart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureChart2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -323,13 +323,13 @@
         private System.Windows.Forms.LinkLabel linkViewGame;
         private System.Windows.Forms.Label textProgress;
         private System.Windows.Forms.PictureBox pictureBoard;
-        private System.Windows.Forms.PictureBox pictureThreat;
-        private System.Windows.Forms.PictureBox pictureMines;
-        private System.Windows.Forms.PictureBox pictureTaverns;
+        private System.Windows.Forms.PictureBox pictureChart0;
+        private System.Windows.Forms.PictureBox pictureChart1;
+        private System.Windows.Forms.PictureBox pictureChart2;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label labelChart0;
+        private System.Windows.Forms.Label labelChart1;
+        private System.Windows.Forms.Label labelChart2;
         private System.Windows.Forms.CheckBox cbContinuous;
         private System.Windows.Forms.ListBox logBox;
         private System.Windows.Forms.ComboBox cbBotSelection;

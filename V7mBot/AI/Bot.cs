@@ -26,5 +26,20 @@ namespace V7mBot.AI
         }
 
         abstract public Move Act();
+
+        public struct VisualizationRequest
+        {
+            public VisualizationRequest(string chart, string desc)
+            {
+                ChartName = chart;
+                Description = desc;
+            }
+            public string ChartName;
+            public string Description;
+        }
+        abstract public IEnumerable<VisualizationRequest> Visualizaton
+        {
+            get;
+        }
     }
 }

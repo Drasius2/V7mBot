@@ -8,13 +8,14 @@ namespace V7mBot.AI
 {
     public class TileMap
     {
+        [Flags]
         public enum TileType
         {
-            Impassable,
-            Free,
-            Hero,
-            Tavern,
-            GoldMine
+            Impassable = 1,
+            Free = 2,
+            Hero = 4,
+            Tavern = 8,
+            GoldMine = 16
         }
 
         public struct Tile
